@@ -167,13 +167,13 @@ function BrandRow({
             {row.name}
           </Link>
         </td>
-        <HighlightableCell cellKey={`${row.key}:$$:spend`} className="px-3 py-2.5 text-right tabular-nums">
+        <HighlightableCell cellKey={`${row.key}:_total:spend`} className="px-3 py-2.5 text-right tabular-nums">
           {row.spend > 0 ? formatCurrency(row.spend) : "-"}
         </HighlightableCell>
-        <HighlightableCell cellKey={`${row.key}:$$:sales`} className="px-3 py-2.5 text-right tabular-nums">
+        <HighlightableCell cellKey={`${row.key}:_total:sales`} className="px-3 py-2.5 text-right tabular-nums">
           {row.ad_sales > 0 ? formatCurrency(row.ad_sales) : "-"}
         </HighlightableCell>
-        <HighlightableCell cellKey={`${row.key}:$$:roas`} className="px-3 py-2.5 text-right tabular-nums">
+        <HighlightableCell cellKey={`${row.key}:_total:roas`} className="px-3 py-2.5 text-right tabular-nums">
           {row.roas > 0 ? formatRoas(row.roas) : "-"}
         </HighlightableCell>
         <HighlightableCell cellKey={`${row.key}:total_sales:value`} className="px-3 py-2.5 text-right tabular-nums">

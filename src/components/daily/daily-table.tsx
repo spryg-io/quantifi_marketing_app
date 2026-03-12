@@ -147,13 +147,13 @@ export function DailyTable({ brands, brandOrder, rowLabels }: DailyTableProps) {
               const roas = b ? b.roas : 0;
               return (
                 <Fragment key={key}>
-                  <HighlightableCell cellKey={`${key}:$$:spend`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
+                  <HighlightableCell cellKey={`${key}:_total:spend`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
                     {totalSpend > 0 ? formatCurrency(totalSpend) : ""}
                   </HighlightableCell>
-                  <HighlightableCell cellKey={`${key}:$$:sales`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
+                  <HighlightableCell cellKey={`${key}:_total:sales`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
                     {totalAdSales > 0 ? formatCurrency(totalAdSales) : ""}
                   </HighlightableCell>
-                  <HighlightableCell cellKey={`${key}:$$:roas`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
+                  <HighlightableCell cellKey={`${key}:_total:roas`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
                     {roas > 0 ? formatRoas(roas) : ""}
                   </HighlightableCell>
                 </Fragment>

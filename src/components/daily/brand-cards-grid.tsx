@@ -79,13 +79,13 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
 
       {/* KPI grid */}
       <div className="grid grid-cols-3 divide-x divide-slate-100">
-        <HighlightableMetric cellKey={`${brandKey}:$$:spend`} label="Spend" value={totalSpend > 0 ? formatCurrency(totalSpend) : "-"} />
+        <HighlightableMetric cellKey={`${brandKey}:_total:spend`} label="Spend" value={totalSpend > 0 ? formatCurrency(totalSpend) : "-"} />
         <HighlightableMetric cellKey={`${brandKey}:total_sales:value`} label="Total Sales" value={data.total_sales > 0 ? formatCurrency(data.total_sales) : "-"} />
-        <HighlightableMetric cellKey={`${brandKey}:$$:roas`} label="ROAS" value={data.roas > 0 ? formatRoas(data.roas) : "-"} />
+        <HighlightableMetric cellKey={`${brandKey}:_total:roas`} label="ROAS" value={data.roas > 0 ? formatRoas(data.roas) : "-"} />
       </div>
 
       <div className="grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100">
-        <HighlightableMetric cellKey={`${brandKey}:$$:sales`} label="Ad Sales" value={data.total_ad_sales > 0 ? formatCurrency(data.total_ad_sales) : "-"} subtle />
+        <HighlightableMetric cellKey={`${brandKey}:_total:sales`} label="Ad Sales" value={data.total_ad_sales > 0 ? formatCurrency(data.total_ad_sales) : "-"} subtle />
         <HighlightableMetric cellKey={`${brandKey}:total_sales:troas`} label="TROAS" value={data.troas > 0 ? formatRoas(data.troas) : "-"} subtle />
         <HighlightableMetric
           cellKey={`${brandKey}:Bloomifi:spend`}
