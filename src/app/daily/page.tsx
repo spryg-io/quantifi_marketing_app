@@ -11,6 +11,7 @@ import { SummaryCards } from "@/components/daily/summary-cards";
 import { BrandSummaryTable } from "@/components/daily/brand-summary-table";
 import { DailyTable } from "@/components/daily/daily-table";
 import { BrandCardsGrid } from "@/components/daily/brand-cards-grid";
+import { HighlightProvider } from "@/components/highlights/highlight-context";
 import type { DailyResponse } from "@/lib/types";
 
 type ViewMode = "summary" | "cards" | "spreadsheet";
@@ -124,7 +125,7 @@ export default function DailyPage() {
           <Skeleton className="h-[600px] rounded-lg" />
         </div>
       ) : data ? (
-        <>
+        <HighlightProvider page="daily" contextDate={date ? format(date, "yyyy-MM-dd") : ""}>
           <SummaryCards brands={data.brands} brandOrder={allBrandOrder} />
 
           {viewMode === "summary" && (
@@ -146,7 +147,7 @@ export default function DailyPage() {
               rowLabels={data.row_labels}
             />
           )}
-        </>
+        </HighlightProvider>
       ) : null}
     </div>
   );

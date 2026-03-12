@@ -19,6 +19,16 @@ function getDb(): Database.Database {
         UNIQUE(brand_key, date)
       )
     `);
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS cell_highlights (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        page TEXT NOT NULL,
+        context_date TEXT NOT NULL,
+        cell_key TEXT NOT NULL,
+        color TEXT NOT NULL,
+        UNIQUE(page, context_date, cell_key)
+      )
+    `);
   }
   return db;
 }
@@ -71,4 +81,39 @@ export function getAllDspEntries(): { brand_key: string; date: string; spend: nu
   return db
     .prepare("SELECT brand_key, date, spend, sales FROM dsp_entries ORDER BY date DESC, brand_key")
     .all() as { brand_key: string; date: string; spend: number; sales: number }[];
+}
+
+// --- Cell Highlights ---
+
+export function getHighlights(page: string, contextDate: string): Record<string, string> {
+  const db = getDb();
+  const rows = db
+    .prepare("SELECT cell_key, color FROM cell_highlights WHERE page = ? AND context_date = ?")
+    .all(page, contextDate) as { cell_key: string; color: string }[];
+  const result: Record<string, string> = {};
+  for (const row of rows) {
+    result[row.cell_key] = row.color;
+  }
+  return result;
+}
+
+export function upsertHighlight(page: string, contextDate: string, cellKey: string, color: string): void {
+  const db = getDb();
+  db.prepare(
+    `INSERT INTO cell_highlights (page, context_date, cell_key, color)
+     VALUES (?, ?, ?, ?)
+     ON CONFLICT(page, context_date, cell_key) DO UPDATE SET color = excluded.color`
+  ).run(page, contextDate, cellKey, color);
+}
+
+export function deleteHighlight(page: string, contextDate: string, cellKey: string): void {
+  const db = getDb();
+  db.prepare("DELETE FROM cell_highlights WHERE page = ? AND context_date = ? AND cell_key = ?")
+    .run(page, contextDate, cellKey);
+}
+
+export function deleteAllHighlights(page: string, contextDate: string): void {
+  const db = getDb();
+  db.prepare("DELETE FROM cell_highlights WHERE page = ? AND context_date = ?")
+    .run(page, contextDate);
 }

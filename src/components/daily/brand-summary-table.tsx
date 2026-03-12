@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronDown, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { BRANDS_CONFIG, ROW_LABELS } from "@/lib/constants";
 import { formatCurrency, formatRoas, formatPercent, cn } from "@/lib/utils";
+import { HighlightableCell } from "@/components/highlights/highlightable-cell";
 import type { BrandDailyData } from "@/lib/types";
 
 interface BrandSummaryTableProps {
@@ -166,24 +167,24 @@ function BrandRow({
             {row.name}
           </Link>
         </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        <HighlightableCell cellKey={`${row.key}:$$:spend`} className="px-3 py-2.5 text-right tabular-nums">
           {row.spend > 0 ? formatCurrency(row.spend) : "-"}
-        </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        </HighlightableCell>
+        <HighlightableCell cellKey={`${row.key}:$$:sales`} className="px-3 py-2.5 text-right tabular-nums">
           {row.ad_sales > 0 ? formatCurrency(row.ad_sales) : "-"}
-        </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        </HighlightableCell>
+        <HighlightableCell cellKey={`${row.key}:$$:roas`} className="px-3 py-2.5 text-right tabular-nums">
           {row.roas > 0 ? formatRoas(row.roas) : "-"}
-        </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        </HighlightableCell>
+        <HighlightableCell cellKey={`${row.key}:total_sales:value`} className="px-3 py-2.5 text-right tabular-nums">
           {row.total_sales > 0 ? formatCurrency(row.total_sales) : "-"}
-        </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        </HighlightableCell>
+        <HighlightableCell cellKey={`${row.key}:total_sales:troas`} className="px-3 py-2.5 text-right tabular-nums">
           {row.troas > 0 ? formatRoas(row.troas) : "-"}
-        </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        </HighlightableCell>
+        <HighlightableCell cellKey={`${row.key}:spend_vs_sales:value`} className="px-3 py-2.5 text-right tabular-nums">
           {row.spend_vs_sales > 0 ? formatPercent(row.spend_vs_sales) : "-"}
-        </td>
+        </HighlightableCell>
       </tr>
 
       {isExpanded && (
@@ -217,9 +218,9 @@ function ExpandedDetail({ brand }: { brand: ReturnType<typeof getBrandMetrics> }
             return (
               <tr key={label} className="border-t border-slate-200/60">
                 <td className="py-1 pr-4 text-slate-600">{label}</td>
-                <td className="py-1 px-3 text-right tabular-nums">{formatCurrency(d.spend)}</td>
-                <td className="py-1 px-3 text-right tabular-nums">{formatCurrency(d.sales)}</td>
-                <td className="py-1 px-3 text-right tabular-nums">{d.roas > 0 ? formatRoas(d.roas) : "-"}</td>
+                <HighlightableCell cellKey={`${brand.key}:${label}:spend`} className="py-1 px-3 text-right tabular-nums">{formatCurrency(d.spend)}</HighlightableCell>
+                <HighlightableCell cellKey={`${brand.key}:${label}:sales`} className="py-1 px-3 text-right tabular-nums">{formatCurrency(d.sales)}</HighlightableCell>
+                <HighlightableCell cellKey={`${brand.key}:${label}:roas`} className="py-1 px-3 text-right tabular-nums">{d.roas > 0 ? formatRoas(d.roas) : "-"}</HighlightableCell>
               </tr>
             );
           })}
@@ -227,7 +228,7 @@ function ExpandedDetail({ brand }: { brand: ReturnType<typeof getBrandMetrics> }
           {data.bloomifi_spend > 0 && (
             <tr className="border-t border-slate-200/60">
               <td className="py-1 pr-4 text-slate-600">Bloomifi</td>
-              <td className="py-1 px-3 text-right tabular-nums">{formatCurrency(data.bloomifi_spend)}</td>
+              <HighlightableCell cellKey={`${brand.key}:Bloomifi:spend`} className="py-1 px-3 text-right tabular-nums">{formatCurrency(data.bloomifi_spend)}</HighlightableCell>
               <td className="py-1 px-3 text-right tabular-nums">-</td>
               <td className="py-1 px-3 text-right tabular-nums">-</td>
             </tr>
@@ -236,8 +237,8 @@ function ExpandedDetail({ brand }: { brand: ReturnType<typeof getBrandMetrics> }
           {data.dsp_spend > 0 && (
             <tr className="border-t border-slate-200/60">
               <td className="py-1 pr-4 text-slate-600">DSP</td>
-              <td className="py-1 px-3 text-right tabular-nums">{formatCurrency(data.dsp_spend)}</td>
-              <td className="py-1 px-3 text-right tabular-nums">{data.dsp_sales > 0 ? formatCurrency(data.dsp_sales) : "-"}</td>
+              <HighlightableCell cellKey={`${brand.key}:DSP:spend`} className="py-1 px-3 text-right tabular-nums">{formatCurrency(data.dsp_spend)}</HighlightableCell>
+              <HighlightableCell cellKey={`${brand.key}:DSP:sales`} className="py-1 px-3 text-right tabular-nums">{data.dsp_sales > 0 ? formatCurrency(data.dsp_sales) : "-"}</HighlightableCell>
               <td className="py-1 px-3 text-right tabular-nums">-</td>
             </tr>
           )}

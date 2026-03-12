@@ -9,6 +9,7 @@ import { MonthlySummaryCards } from "@/components/monthly/monthly-summary-cards"
 import { MonthlyCardsGrid } from "@/components/monthly/monthly-cards-grid";
 import { MonthlyBrandTable } from "@/components/monthly/monthly-brand-table";
 import { MonthlyTable } from "@/components/monthly/monthly-table";
+import { HighlightProvider } from "@/components/highlights/highlight-context";
 import type { MonthlyResponse } from "@/lib/types";
 
 type ViewMode = "cards" | "summary" | "spreadsheet";
@@ -99,7 +100,7 @@ export default function MonthlyPage() {
           <Skeleton className="h-[600px] rounded-lg" />
         </div>
       ) : data ? (
-        <>
+        <HighlightProvider page="monthly" contextDate={monthDate ? format(monthDate, "yyyy-MM") : ""}>
           <MonthlySummaryCards brandGroups={data.brand_groups} />
 
           {viewMode === "cards" && (
@@ -111,7 +112,7 @@ export default function MonthlyPage() {
           {viewMode === "spreadsheet" && (
             <MonthlyTable brandGroups={data.brand_groups} />
           )}
-        </>
+        </HighlightProvider>
       ) : null}
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { formatCurrency, formatPercent, cn } from "@/lib/utils";
+import { HighlightableCell } from "@/components/highlights/highlightable-cell";
 import type { MonthlyBrandGroup } from "@/lib/types";
 
 interface MonthlyTableProps {
@@ -54,38 +55,42 @@ function Group({ group, index }: { group: MonthlyBrandGroup; index: number }) {
             >
               {row.label}
             </td>
-            <td
+            <HighlightableCell
+              cellKey={`${group.display_name}:${row.label}:spend`}
               className={cn(
                 "px-4 py-1.5 text-right tabular-nums",
                 isTotal && "font-bold"
               )}
             >
               {row.spend > 0 ? formatCurrency(row.spend) : "-"}
-            </td>
-            <td
+            </HighlightableCell>
+            <HighlightableCell
+              cellKey={`${group.display_name}:${row.label}:sales`}
               className={cn(
                 "px-4 py-1.5 text-right tabular-nums",
                 isTotal && "font-bold"
               )}
             >
               {row.sales > 0 ? formatCurrency(row.sales) : "-"}
-            </td>
-            <td
+            </HighlightableCell>
+            <HighlightableCell
+              cellKey={`${group.display_name}:${row.label}:tacos`}
               className={cn(
                 "px-4 py-1.5 text-right tabular-nums",
                 isTotal && "font-bold"
               )}
             >
               {row.tacos > 0 ? formatPercent(row.tacos) : "-"}
-            </td>
-            <td
+            </HighlightableCell>
+            <HighlightableCell
+              cellKey={`${group.display_name}:${row.label}:roas`}
               className={cn(
                 "px-4 py-1.5 text-right tabular-nums",
                 isTotal && "font-bold"
               )}
             >
               {row.roas > 0 ? row.roas.toFixed(2) : "-"}
-            </td>
+            </HighlightableCell>
           </tr>
         );
       })}

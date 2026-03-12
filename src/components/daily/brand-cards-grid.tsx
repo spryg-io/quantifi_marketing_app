@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { BRANDS_CONFIG, ROW_LABELS } from "@/lib/constants";
 import { formatCurrency, formatRoas, formatPercent, cn } from "@/lib/utils";
+import { HighlightableCell } from "@/components/highlights/highlightable-cell";
+import { HighlightableMetric } from "@/components/highlights/highlightable-metric";
 import type { BrandDailyData } from "@/lib/types";
 
 interface BrandCardsGridProps {
@@ -77,15 +79,16 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
 
       {/* KPI grid */}
       <div className="grid grid-cols-3 divide-x divide-slate-100">
-        <Metric label="Spend" value={totalSpend > 0 ? formatCurrency(totalSpend) : "-"} />
-        <Metric label="Total Sales" value={data.total_sales > 0 ? formatCurrency(data.total_sales) : "-"} />
-        <Metric label="ROAS" value={data.roas > 0 ? formatRoas(data.roas) : "-"} />
+        <HighlightableMetric cellKey={`${brandKey}:$$:spend`} label="Spend" value={totalSpend > 0 ? formatCurrency(totalSpend) : "-"} />
+        <HighlightableMetric cellKey={`${brandKey}:total_sales:value`} label="Total Sales" value={data.total_sales > 0 ? formatCurrency(data.total_sales) : "-"} />
+        <HighlightableMetric cellKey={`${brandKey}:$$:roas`} label="ROAS" value={data.roas > 0 ? formatRoas(data.roas) : "-"} />
       </div>
 
       <div className="grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100">
-        <Metric label="Ad Sales" value={data.total_ad_sales > 0 ? formatCurrency(data.total_ad_sales) : "-"} subtle />
-        <Metric label="TROAS" value={data.troas > 0 ? formatRoas(data.troas) : "-"} subtle />
-        <Metric
+        <HighlightableMetric cellKey={`${brandKey}:$$:sales`} label="Ad Sales" value={data.total_ad_sales > 0 ? formatCurrency(data.total_ad_sales) : "-"} subtle />
+        <HighlightableMetric cellKey={`${brandKey}:total_sales:troas`} label="TROAS" value={data.troas > 0 ? formatRoas(data.troas) : "-"} subtle />
+        <HighlightableMetric
+          cellKey={`${brandKey}:Bloomifi:spend`}
           label="Bloomifi"
           value={data.bloomifi_spend > 0 ? formatCurrency(data.bloomifi_spend) : "-"}
           subtle
@@ -111,18 +114,18 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
                 return (
                   <tr key={label} className="border-b border-slate-200/40">
                     <td className="py-1 pl-4 pr-2 text-slate-600">{label}</td>
-                    <td className="py-1 px-2 text-right tabular-nums">{formatCurrency(d.spend)}</td>
-                    <td className="py-1 px-2 text-right tabular-nums">{formatCurrency(d.sales)}</td>
-                    <td className="py-1 pl-2 pr-4 text-right tabular-nums">
+                    <HighlightableCell cellKey={`${brandKey}:${label}:spend`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(d.spend)}</HighlightableCell>
+                    <HighlightableCell cellKey={`${brandKey}:${label}:sales`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(d.sales)}</HighlightableCell>
+                    <HighlightableCell cellKey={`${brandKey}:${label}:roas`} className="py-1 pl-2 pr-4 text-right tabular-nums">
                       {d.roas > 0 ? formatRoas(d.roas) : "-"}
-                    </td>
+                    </HighlightableCell>
                   </tr>
                 );
               })}
               {data.bloomifi_spend > 0 && (
                 <tr className="border-b border-slate-200/40">
                   <td className="py-1 pl-4 pr-2 text-slate-600">Bloomifi</td>
-                  <td className="py-1 px-2 text-right tabular-nums">{formatCurrency(data.bloomifi_spend)}</td>
+                  <HighlightableCell cellKey={`${brandKey}:Bloomifi:spend`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(data.bloomifi_spend)}</HighlightableCell>
                   <td className="py-1 px-2 text-right tabular-nums">-</td>
                   <td className="py-1 pl-2 pr-4 text-right tabular-nums">-</td>
                 </tr>
@@ -130,10 +133,10 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
               {data.dsp_spend > 0 && (
                 <tr className="border-b border-slate-200/40">
                   <td className="py-1 pl-4 pr-2 text-slate-600">DSP</td>
-                  <td className="py-1 px-2 text-right tabular-nums">{formatCurrency(data.dsp_spend)}</td>
-                  <td className="py-1 px-2 text-right tabular-nums">
+                  <HighlightableCell cellKey={`${brandKey}:DSP:spend`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(data.dsp_spend)}</HighlightableCell>
+                  <HighlightableCell cellKey={`${brandKey}:DSP:sales`} className="py-1 px-2 text-right tabular-nums">
                     {data.dsp_sales > 0 ? formatCurrency(data.dsp_sales) : "-"}
-                  </td>
+                  </HighlightableCell>
                   <td className="py-1 pl-2 pr-4 text-right tabular-nums">-</td>
                 </tr>
               )}

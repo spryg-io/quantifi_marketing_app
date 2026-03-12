@@ -107,3 +107,12 @@ export interface DspEntry {
   spend: number;
   sales: number;
 }
+
+export interface CellHighlight {
+  page: string;
+  context_date: string;
+  cell_key: string;
+  color: string;
+}
+
+export type HighlightMap = Record<string, string>;

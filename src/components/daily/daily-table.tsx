@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BRANDS_CONFIG } from "@/lib/constants";
 import { formatCurrency, formatRoas, formatPercent, cn } from "@/lib/utils";
+import { HighlightableCell } from "@/components/highlights/highlightable-cell";
 import type { BrandDailyData } from "@/lib/types";
 
 interface DailyTableProps {
@@ -77,15 +78,15 @@ export function DailyTable({ brands, brandOrder, rowLabels }: DailyTableProps) {
                 const bg = idx % 2 === 0 ? "" : "bg-slate-50";
                 return (
                   <Fragment key={key}>
-                    <td className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
+                    <HighlightableCell cellKey={`${key}:${label}:spend`} className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
                       {data && data.spend > 0 ? formatCurrency(data.spend) : ""}
-                    </td>
-                    <td className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
+                    </HighlightableCell>
+                    <HighlightableCell cellKey={`${key}:${label}:sales`} className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
                       {data && data.sales > 0 ? formatCurrency(data.sales) : ""}
-                    </td>
-                    <td className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
+                    </HighlightableCell>
+                    <HighlightableCell cellKey={`${key}:${label}:roas`} className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
                       {data && data.roas > 0 ? formatRoas(data.roas) : ""}
-                    </td>
+                    </HighlightableCell>
                   </Fragment>
                 );
               })}
@@ -102,9 +103,9 @@ export function DailyTable({ brands, brandOrder, rowLabels }: DailyTableProps) {
               const bg = idx % 2 === 0 ? "" : "bg-slate-50";
               return (
                 <Fragment key={key}>
-                  <td className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
+                  <HighlightableCell cellKey={`${key}:Bloomifi:spend`} className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
                     {b && b.bloomifi_spend > 0 ? formatCurrency(b.bloomifi_spend) : ""}
-                  </td>
+                  </HighlightableCell>
                   <td className={cn("border-b px-2 py-1.5 text-right", bg)} />
                   <td className={cn("border-b px-2 py-1.5 text-right", bg)} />
                 </Fragment>
@@ -122,12 +123,12 @@ export function DailyTable({ brands, brandOrder, rowLabels }: DailyTableProps) {
               const bg = idx % 2 === 0 ? "" : "bg-slate-50";
               return (
                 <Fragment key={key}>
-                  <td className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
+                  <HighlightableCell cellKey={`${key}:DSP:spend`} className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
                     {b && b.dsp_spend > 0 ? formatCurrency(b.dsp_spend) : ""}
-                  </td>
-                  <td className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
+                  </HighlightableCell>
+                  <HighlightableCell cellKey={`${key}:DSP:sales`} className={cn("border-b px-2 py-1.5 text-right tabular-nums", bg)}>
                     {b && b.dsp_sales > 0 ? formatCurrency(b.dsp_sales) : ""}
-                  </td>
+                  </HighlightableCell>
                   <td className={cn("border-b px-2 py-1.5 text-right", bg)} />
                 </Fragment>
               );
@@ -146,15 +147,15 @@ export function DailyTable({ brands, brandOrder, rowLabels }: DailyTableProps) {
               const roas = b ? b.roas : 0;
               return (
                 <Fragment key={key}>
-                  <td className="border-b px-2 py-2 text-right font-bold tabular-nums">
+                  <HighlightableCell cellKey={`${key}:$$:spend`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
                     {totalSpend > 0 ? formatCurrency(totalSpend) : ""}
-                  </td>
-                  <td className="border-b px-2 py-2 text-right font-bold tabular-nums">
+                  </HighlightableCell>
+                  <HighlightableCell cellKey={`${key}:$$:sales`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
                     {totalAdSales > 0 ? formatCurrency(totalAdSales) : ""}
-                  </td>
-                  <td className="border-b px-2 py-2 text-right font-bold tabular-nums">
+                  </HighlightableCell>
+                  <HighlightableCell cellKey={`${key}:$$:roas`} className="border-b px-2 py-2 text-right font-bold tabular-nums">
                     {roas > 0 ? formatRoas(roas) : ""}
-                  </td>
+                  </HighlightableCell>
                 </Fragment>
               );
             })}
@@ -169,15 +170,15 @@ export function DailyTable({ brands, brandOrder, rowLabels }: DailyTableProps) {
               const b = brands[key];
               return (
                 <Fragment key={key}>
-                  <td className="border-b px-2 py-2 text-right font-bold text-white tabular-nums">
+                  <HighlightableCell cellKey={`${key}:total_sales:value`} className="border-b px-2 py-2 text-right font-bold text-white tabular-nums">
                     {b && b.total_sales > 0 ? formatCurrency(b.total_sales) : ""}
-                  </td>
+                  </HighlightableCell>
                   <td className="border-b px-2 py-2 text-right font-bold text-white text-xs">
                     TROAS
                   </td>
-                  <td className="border-b px-2 py-2 text-right font-bold text-white tabular-nums">
+                  <HighlightableCell cellKey={`${key}:total_sales:troas`} className="border-b px-2 py-2 text-right font-bold text-white tabular-nums">
                     {b && b.troas > 0 ? formatRoas(b.troas) : ""}
-                  </td>
+                  </HighlightableCell>
                 </Fragment>
               );
             })}
@@ -195,9 +196,9 @@ export function DailyTable({ brands, brandOrder, rowLabels }: DailyTableProps) {
                 <Fragment key={key}>
                   <td className={cn("px-2 py-2 text-right", bg)} />
                   <td className={cn("px-2 py-2 text-right", bg)} />
-                  <td className={cn("px-2 py-2 text-right font-bold tabular-nums", bg)}>
+                  <HighlightableCell cellKey={`${key}:spend_vs_sales:value`} className={cn("px-2 py-2 text-right font-bold tabular-nums", bg)}>
                     {b && b.spend_vs_sales > 0 ? formatPercent(b.spend_vs_sales) : ""}
-                  </td>
+                  </HighlightableCell>
                 </Fragment>
               );
             })}

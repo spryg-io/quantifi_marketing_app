@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { formatCurrency, formatPercent, cn } from "@/lib/utils";
+import { HighlightableCell } from "@/components/highlights/highlightable-cell";
+import { HighlightableMetric } from "@/components/highlights/highlightable-metric";
 import type { MonthlyBrandGroup } from "@/lib/types";
 
 interface MonthlyCardsGridProps {
@@ -88,10 +90,10 @@ function MonthlyBrandCard({ group }: { group: MonthlyBrandGroup }) {
       {/* Total KPIs */}
       {totalRow && (
         <div className="grid grid-cols-4 divide-x divide-slate-100">
-          <Metric label="Spend" value={totalRow.spend > 0 ? formatCurrency(totalRow.spend) : "-"} />
-          <Metric label="Sales" value={totalRow.sales > 0 ? formatCurrency(totalRow.sales) : "-"} />
-          <Metric label="TACOS" value={tacos > 0 ? formatPercent(tacos) : "-"} />
-          <Metric label="ROAS" value={totalRow.roas > 0 ? `$${totalRow.roas.toFixed(2)}` : "-"} />
+          <HighlightableMetric cellKey={`${group.display_name}:total:spend`} label="Spend" value={totalRow.spend > 0 ? formatCurrency(totalRow.spend) : "-"} />
+          <HighlightableMetric cellKey={`${group.display_name}:total:sales`} label="Sales" value={totalRow.sales > 0 ? formatCurrency(totalRow.sales) : "-"} />
+          <HighlightableMetric cellKey={`${group.display_name}:total:tacos`} label="TACOS" value={tacos > 0 ? formatPercent(tacos) : "-"} />
+          <HighlightableMetric cellKey={`${group.display_name}:total:roas`} label="ROAS" value={totalRow.roas > 0 ? `$${totalRow.roas.toFixed(2)}` : "-"} />
         </div>
       )}
 
@@ -115,15 +117,15 @@ function MonthlyBrandCard({ group }: { group: MonthlyBrandGroup }) {
               return (
                 <tr key={row.label} className="border-b border-slate-200/40">
                   <td className="py-1 pl-4 pr-2 text-slate-600">{source}</td>
-                  <td className="py-1 px-2 text-right tabular-nums">
+                  <HighlightableCell cellKey={`${group.display_name}:${row.label}:spend`} className="py-1 px-2 text-right tabular-nums">
                     {row.spend > 0 ? formatCurrency(row.spend) : "-"}
-                  </td>
-                  <td className="py-1 px-2 text-right tabular-nums">
+                  </HighlightableCell>
+                  <HighlightableCell cellKey={`${group.display_name}:${row.label}:sales`} className="py-1 px-2 text-right tabular-nums">
                     {row.sales > 0 ? formatCurrency(row.sales) : "-"}
-                  </td>
-                  <td className="py-1 pl-2 pr-4 text-right tabular-nums">
+                  </HighlightableCell>
+                  <HighlightableCell cellKey={`${group.display_name}:${row.label}:roas`} className="py-1 pl-2 pr-4 text-right tabular-nums">
                     {row.roas > 0 ? `$${row.roas.toFixed(2)}` : "-"}
-                  </td>
+                  </HighlightableCell>
                 </tr>
               );
             })}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { formatCurrency, formatPercent, cn } from "@/lib/utils";
+import { HighlightableCell } from "@/components/highlights/highlightable-cell";
 import type { MonthlyBrandGroup } from "@/lib/types";
 
 interface MonthlyBrandTableProps {
@@ -183,24 +184,24 @@ function BrandRow({
             row.name
           )}
         </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        <HighlightableCell cellKey={`${row.name}:total:spend`} className="px-3 py-2.5 text-right tabular-nums">
           {row.spend > 0 ? formatCurrency(row.spend) : "-"}
-        </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        </HighlightableCell>
+        <HighlightableCell cellKey={`${row.name}:total:sales`} className="px-3 py-2.5 text-right tabular-nums">
           {row.sales > 0 ? formatCurrency(row.sales) : "-"}
-        </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        </HighlightableCell>
+        <HighlightableCell cellKey={`${row.name}:total:tacos`} className="px-3 py-2.5 text-right tabular-nums">
           {row.tacos > 0 ? formatPercent(row.tacos) : "-"}
-        </td>
-        <td className="px-3 py-2.5 text-right tabular-nums">
+        </HighlightableCell>
+        <HighlightableCell cellKey={`${row.name}:total:roas`} className="px-3 py-2.5 text-right tabular-nums">
           {row.roas > 0 ? `$${row.roas.toFixed(2)}` : "-"}
-        </td>
+        </HighlightableCell>
       </tr>
 
       {isExpanded && (
         <tr className="border-b">
           <td colSpan={6} className="p-0">
-            <ExpandedDetail breakdownRows={row.breakdownRows} />
+            <ExpandedDetail brandName={row.name} breakdownRows={row.breakdownRows} />
           </td>
         </tr>
       )}
@@ -209,8 +210,10 @@ function BrandRow({
 }
 
 function ExpandedDetail({
+  brandName,
   breakdownRows,
 }: {
+  brandName: string;
   breakdownRows: RowData["breakdownRows"];
 }) {
   return (
@@ -233,18 +236,18 @@ function ExpandedDetail({
             return (
               <tr key={row.label} className="border-t border-slate-200/60">
                 <td className="py-1 pr-4 text-slate-600">{source}</td>
-                <td className="py-1 px-3 text-right tabular-nums">
+                <HighlightableCell cellKey={`${brandName}:${row.label}:spend`} className="py-1 px-3 text-right tabular-nums">
                   {row.spend > 0 ? formatCurrency(row.spend) : "-"}
-                </td>
-                <td className="py-1 px-3 text-right tabular-nums">
+                </HighlightableCell>
+                <HighlightableCell cellKey={`${brandName}:${row.label}:sales`} className="py-1 px-3 text-right tabular-nums">
                   {row.sales > 0 ? formatCurrency(row.sales) : "-"}
-                </td>
-                <td className="py-1 px-3 text-right tabular-nums">
+                </HighlightableCell>
+                <HighlightableCell cellKey={`${brandName}:${row.label}:tacos`} className="py-1 px-3 text-right tabular-nums">
                   {row.tacos > 0 ? formatPercent(row.tacos) : "-"}
-                </td>
-                <td className="py-1 px-3 text-right tabular-nums">
+                </HighlightableCell>
+                <HighlightableCell cellKey={`${brandName}:${row.label}:roas`} className="py-1 px-3 text-right tabular-nums">
                   {row.roas > 0 ? `$${row.roas.toFixed(2)}` : "-"}
-                </td>
+                </HighlightableCell>
               </tr>
             );
           })}
