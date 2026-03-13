@@ -1,0 +1,34 @@
+name: Deploy to local server
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, marketing]
+    steps:
+      - name: Pull latest changes
+        run: |
+          cd /home/quantifi/quantifi_marketing_app
+          git pull origin main
+
+      - name: Install dependencies
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+          cd /home/quantifi/quantifi_marketing_app
+          npm install --legacy-peer-deps
+
+      - name: Build
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+          cd /home/quantifi/quantifi_marketing_app
+          npm run build
+
+      - name: Restart app
+        run: |
+          systemctl --user restart quantifi-marketing
+          sleep 2
+          systemctl --user is-active quantifi-marketing
