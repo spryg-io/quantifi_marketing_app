@@ -104,7 +104,8 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
                 <th className="text-left py-1.5 pl-4 pr-2 font-medium">Type</th>
                 <th className="text-right py-1.5 px-2 font-medium">Spend</th>
                 <th className="text-right py-1.5 px-2 font-medium">Sales</th>
-                <th className="text-right py-1.5 pl-2 pr-4 font-medium">ROAS</th>
+                <th className="text-right py-1.5 px-2 font-medium">ROAS</th>
+                <th className="text-right py-1.5 pl-2 pr-4 font-medium">MTD ROAS</th>
               </tr>
             </thead>
             <tbody>
@@ -116,9 +117,12 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
                     <td className="py-1 pl-4 pr-2 text-slate-600">{label}</td>
                     <HighlightableCell cellKey={`${brandKey}:${label}:spend`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(d.spend)}</HighlightableCell>
                     <HighlightableCell cellKey={`${brandKey}:${label}:sales`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(d.sales)}</HighlightableCell>
-                    <HighlightableCell cellKey={`${brandKey}:${label}:roas`} className="py-1 pl-2 pr-4 text-right tabular-nums">
+                    <HighlightableCell cellKey={`${brandKey}:${label}:roas`} className="py-1 px-2 text-right tabular-nums">
                       {d.roas > 0 ? formatRoas(d.roas) : "-"}
                     </HighlightableCell>
+                    <td className="py-1 pl-2 pr-4 text-right tabular-nums">
+                      {data.mtd_campaigns[label]?.roas > 0 ? formatRoas(data.mtd_campaigns[label].roas) : "-"}
+                    </td>
                   </tr>
                 );
               })}
@@ -126,6 +130,7 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
                 <tr className="border-b border-slate-200/40">
                   <td className="py-1 pl-4 pr-2 text-slate-600">Bloomifi</td>
                   <HighlightableCell cellKey={`${brandKey}:Bloomifi:spend`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(data.bloomifi_spend)}</HighlightableCell>
+                  <td className="py-1 px-2 text-right tabular-nums">-</td>
                   <td className="py-1 px-2 text-right tabular-nums">-</td>
                   <td className="py-1 pl-2 pr-4 text-right tabular-nums">-</td>
                 </tr>
@@ -137,6 +142,7 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
                   <HighlightableCell cellKey={`${brandKey}:DSP:sales`} className="py-1 px-2 text-right tabular-nums">
                     {data.dsp_sales > 0 ? formatCurrency(data.dsp_sales) : "-"}
                   </HighlightableCell>
+                  <td className="py-1 px-2 text-right tabular-nums">-</td>
                   <td className="py-1 pl-2 pr-4 text-right tabular-nums">-</td>
                 </tr>
               )}

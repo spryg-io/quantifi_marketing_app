@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { format, subDays } from "date-fns";
 import { ALL_BRANDS, BRANDS_CONFIG, ROW_LABELS, BRAND_ORDER, SBL_BRAND_ORDER } from "@/lib/constants";
-import { getBrandDailyData, getBrandTotalSales } from "@/lib/queries/aggregation";
+import { getBrandDailyData, getBrandTotalSales, getBrandMTDData } from "@/lib/queries/aggregation";
 import { getBloomifiDailySpend } from "@/lib/queries/bloomifi";
 import { getDailyDspData } from "@/lib/queries/campaigns";
 import { getExchangeRate } from "@/lib/currency";
@@ -17,10 +17,11 @@ export async function GET(request: NextRequest) {
       getBloomifiDailySpend(dateStr),
       ...ALL_BRANDS.map(async (brandKey) => {
         const config = BRANDS_CONFIG[brandKey];
-        const [campaigns, totalSales, dspData] = await Promise.all([
+        const [campaigns, totalSales, dspData, mtdCampaigns] = await Promise.all([
           getBrandDailyData(brandKey, dateStr),
           getBrandTotalSales(brandKey, dateStr),
           getDailyDspData(config.schema, dateStr),
+          getBrandMTDData(brandKey, dateStr),
         ]);
 
         // Currency conversion for DSP
@@ -33,14 +34,14 @@ export async function GET(request: NextRequest) {
           dspSales = Math.round(dspSales * rate * 100) / 100;
         }
 
-        return { brandKey, campaigns, totalSales, dspSpend, dspSales };
+        return { brandKey, campaigns, totalSales, dspSpend, dspSales, mtdCampaigns };
       }),
     ]);
 
     // Build per-brand response
     const brands: Record<string, BrandDailyData> = {};
 
-    for (const { brandKey, campaigns, totalSales, dspSpend, dspSales } of brandResults) {
+    for (const { brandKey, campaigns, totalSales, dspSpend, dspSales, mtdCampaigns } of brandResults) {
       const config = BRANDS_CONFIG[brandKey];
 
       // Get bloomifi spend for this brand's schema
@@ -69,6 +70,7 @@ export async function GET(request: NextRequest) {
 
       brands[brandKey] = {
         campaigns,
+        mtd_campaigns: mtdCampaigns,
         total_sales: totalSales,
         bloomifi_spend: bloomifiSpendValue,
         dsp_spend: dspSpend,

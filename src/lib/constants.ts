@@ -77,19 +77,19 @@ export const BRANDS_CONFIG: Record<string, BrandConfig> = {
 };
 
 export const BRAND_ORDER = [
+  "actiiv",
+  "bioeffect",
+  "caldera",
+  "hanni",
   "herbivore",
   "iconic_london",
-  "hanni",
   "oneskin",
-  "actiiv",
-  "zenagen",
-  "caldera",
-  "bioeffect",
-  "versed",
   "tbs",
+  "versed",
+  "zenagen",
 ];
 
-export const SBL_BRAND_ORDER = ["sbl_uk", "sbl_it", "sbl_germany", "sbl_us"];
+export const SBL_BRAND_ORDER = ["sbl_germany", "sbl_it", "sbl_uk", "sbl_us"];
 
 export const ALL_BRANDS = [...BRAND_ORDER, ...SBL_BRAND_ORDER];
 
@@ -120,6 +120,30 @@ export const ALL_ROW_LABELS = [
 export const MASTER_TAB_GROUP_SIZE = 4;
 
 export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
+  // ACTIIV group
+  { display_name: "ACTIIV (Amazon)", brand_key: "actiiv", source: "database" },
+  { display_name: "ACTIIV (Bloomifi)", source: "sheet" },
+  { display_name: "ACTIIV (DSP)", source: "sheet" },
+  { display_name: "ACTIIV (Total)", source: "sum_above" },
+
+  // Bioeffect group
+  { display_name: "Bioeffect (Amazon)", brand_key: "bioeffect", source: "database" },
+  { display_name: "Bioeffect (Bloomifi)", source: "sheet" },
+  { display_name: "Bioeffect (DSP)", source: "sheet" },
+  { display_name: "Bioeffect (Total)", source: "sum_above" },
+
+  // Caldera group
+  { display_name: "Caldera (Amazon)", brand_key: "caldera", source: "database" },
+  { display_name: "Caldera (Bloomifi)", source: "sheet" },
+  { display_name: "Caldera (DSP)", source: "sheet" },
+  { display_name: "Caldera (Total)", source: "sum_above" },
+
+  // Hanni group
+  { display_name: "Hanni (Amazon)", brand_key: "hanni", source: "database" },
+  { display_name: "Hanni (Bloomifi)", source: "sheet" },
+  { display_name: "Hanni (DSP)", source: "sheet" },
+  { display_name: "Hanni (Total)", source: "sum_above" },
+
   // Herbivore group
   { display_name: "Herbivore (Amazon)", brand_key: "herbivore", source: "database" },
   { display_name: "Herbivore (Bloomifi)", source: "sheet" },
@@ -132,47 +156,11 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "Iconic (DSP)", source: "sheet" },
   { display_name: "Iconic (Total)", source: "sum_above" },
 
-  // Hanni group
-  { display_name: "Hanni (Amazon)", brand_key: "hanni", source: "database" },
-  { display_name: "Hanni (Bloomifi)", source: "sheet" },
-  { display_name: "Hanni (DSP)", source: "sheet" },
-  { display_name: "Hanni (Total)", source: "sum_above" },
-
   // OneSkin group
   { display_name: "OneSkin (Amazon)", brand_key: "oneskin", source: "database" },
   { display_name: "OneSkin (Bloomifi)", source: "sheet" },
   { display_name: "OneSkin (DSP)", source: "sheet" },
   { display_name: "OneSkin (Total)", source: "sum_above" },
-
-  // ACTIIV group
-  { display_name: "ACTIIV (Amazon)", brand_key: "actiiv", source: "database" },
-  { display_name: "ACTIIV (Bloomifi)", source: "sheet" },
-  { display_name: "ACTIIV (DSP)", source: "sheet" },
-  { display_name: "ACTIIV (Total)", source: "sum_above" },
-
-  // Zenagen group
-  { display_name: "Zenagen (Amazon)", brand_key: "zenagen", source: "database" },
-  { display_name: "Zenagen (Bloomifi)", source: "sheet" },
-  { display_name: "Zenagen (DSP)", source: "sheet" },
-  { display_name: "Zenagen (Total)", source: "sum_above" },
-
-  // Caldera group
-  { display_name: "Caldera (Amazon)", brand_key: "caldera", source: "database" },
-  { display_name: "Caldera (Bloomifi)", source: "sheet" },
-  { display_name: "Caldera (DSP)", source: "sheet" },
-  { display_name: "Caldera (Total)", source: "sum_above" },
-
-  // Bioeffect group
-  { display_name: "Bioeffect (Amazon)", brand_key: "bioeffect", source: "database" },
-  { display_name: "Bioeffect (Bloomifi)", source: "sheet" },
-  { display_name: "Bioeffect (DSP)", source: "sheet" },
-  { display_name: "Bioeffect (Total)", source: "sum_above" },
-
-  // Versed group
-  { display_name: "Versed (Amazon)", brand_key: "versed", source: "database" },
-  { display_name: "Versed (Bloomifi)", source: "sheet" },
-  { display_name: "Versed (DSP)", source: "sheet" },
-  { display_name: "Versed (Total)", source: "sum_above" },
 
   // SBL group (combined from 4 sub-brands)
   { display_name: "SBL (Amazon)", brand_keys: ["sbl_uk", "sbl_it", "sbl_germany", "sbl_us"], source: "database_sum" },
@@ -185,6 +173,18 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "TBS (Bloomifi)", source: "sheet" },
   { display_name: "TBS (DSP)", source: "sheet" },
   { display_name: "TBS (Total)", source: "sum_above" },
+
+  // Versed group
+  { display_name: "Versed (Amazon)", brand_key: "versed", source: "database" },
+  { display_name: "Versed (Bloomifi)", source: "sheet" },
+  { display_name: "Versed (DSP)", source: "sheet" },
+  { display_name: "Versed (Total)", source: "sum_above" },
+
+  // Zenagen group
+  { display_name: "Zenagen (Amazon)", brand_key: "zenagen", source: "database" },
+  { display_name: "Zenagen (Bloomifi)", source: "sheet" },
+  { display_name: "Zenagen (DSP)", source: "sheet" },
+  { display_name: "Zenagen (Total)", source: "sum_above" },
 ];
 
 // Brand display names for the brand deep-dive selector

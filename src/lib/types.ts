@@ -26,6 +26,7 @@ export interface AggregatedMetrics {
 
 export interface BrandDailyData {
   campaigns: Record<string, AggregatedMetrics>;
+  mtd_campaigns: Record<string, AggregatedMetrics>;
   total_sales: number;
   bloomifi_spend: number;
   dsp_spend: number;

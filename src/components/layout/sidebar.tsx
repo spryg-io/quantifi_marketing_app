@@ -6,7 +6,6 @@ import {
   BarChart3,
   Calendar,
   Building2,
-  FileEdit,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +13,6 @@ const navigation = [
   { name: "Daily", href: "/daily", icon: Calendar },
   { name: "Monthly", href: "/monthly", icon: BarChart3 },
   { name: "Brand", href: "/brand/herbivore", icon: Building2 },
-  { name: "DSP", href: "/dsp", icon: FileEdit },
 ];
 
 export function Sidebar() {

@@ -1,6 +1,7 @@
+import { format, startOfMonth } from "date-fns";
 import { ROW_LABELS, BRANDS_CONFIG } from "@/lib/constants";
 import { getExchangeRate } from "@/lib/currency";
-import { getDailyCampaignData } from "./campaigns";
+import { getDailyCampaignData, getCampaignDataRange } from "./campaigns";
 import { getDailyTotalSales } from "./sales";
 import type { CampaignRow, AggregatedMetrics } from "@/lib/types";
 
@@ -110,4 +111,42 @@ export async function getBrandTotalSales(
   }
 
   return totalSales;
+}
+
+/**
+ * Get month-to-date aggregated campaign data for a brand.
+ * Spans from 1st of the month through targetDate.
+ */
+export async function getBrandMTDData(
+  brandKey: string,
+  targetDate: string
+): Promise<Record<string, AggregatedMetrics>> {
+  const config = BRANDS_CONFIG[brandKey];
+  if (!config) {
+    return Object.fromEntries(
+      ROW_LABELS.map((r) => [r.label, { spend: 0, sales: 0, roas: 0 }])
+    );
+  }
+
+  const monthStart = format(startOfMonth(new Date(targetDate + "T00:00:00")), "yyyy-MM-dd");
+  const campaigns = await getCampaignDataRange(config.schema, monthStart, targetDate);
+
+  if (campaigns.length === 0) {
+    return Object.fromEntries(
+      ROW_LABELS.map((r) => [r.label, { spend: 0, sales: 0, roas: 0 }])
+    );
+  }
+
+  const result = aggregateByPattern(campaigns);
+
+  const currency = config.currency ?? "USD";
+  if (currency !== "USD") {
+    const rate = await getExchangeRate(currency);
+    for (const data of Object.values(result)) {
+      data.spend = Math.round(data.spend * rate * 100) / 100;
+      data.sales = Math.round(data.sales * rate * 100) / 100;
+    }
+  }
+
+  return result;
 }
