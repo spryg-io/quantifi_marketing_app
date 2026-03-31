@@ -10,6 +10,7 @@ import { MonthlyCardsGrid } from "@/components/monthly/monthly-cards-grid";
 import { MonthlyBrandTable } from "@/components/monthly/monthly-brand-table";
 import { MonthlyTable } from "@/components/monthly/monthly-table";
 import { HighlightProvider } from "@/components/highlights/highlight-context";
+import { SpendLegend } from "@/components/shared/spend-legend";
 import type { MonthlyResponse } from "@/lib/types";
 
 type ViewMode = "cards" | "summary" | "spreadsheet";
@@ -55,7 +56,10 @@ export default function MonthlyPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-slate-900">Monthly Summary</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-semibold text-slate-900">Monthly Summary</h2>
+          <SpendLegend />
+        </div>
         <div className="flex items-center gap-2">
           {/* View mode toggle */}
           <div className="flex items-center border rounded-md overflow-hidden mr-2">

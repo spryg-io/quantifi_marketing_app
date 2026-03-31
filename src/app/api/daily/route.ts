@@ -3,7 +3,8 @@ import { format, subDays } from "date-fns";
 import { ALL_BRANDS, BRANDS_CONFIG, ROW_LABELS, BRAND_ORDER, SBL_BRAND_ORDER } from "@/lib/constants";
 import { getBrandDailyData, getBrandTotalSales } from "@/lib/queries/aggregation";
 import { getBloomifiDailySpend } from "@/lib/queries/bloomifi";
-import { getDspEntries } from "@/lib/db/sqlite";
+import { getDailyDspData } from "@/lib/queries/campaigns";
+import { getExchangeRate } from "@/lib/currency";
 import type { BrandDailyData, DailyResponse } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
@@ -12,35 +13,38 @@ export async function GET(request: NextRequest) {
 
   try {
     // Fetch all brand data + bloomifi in parallel
-    const [bloomifiSpend, dspEntries, ...brandResults] = await Promise.all([
+    const [bloomifiSpend, ...brandResults] = await Promise.all([
       getBloomifiDailySpend(dateStr),
-      Promise.resolve(getDspEntries(dateStr)),
       ...ALL_BRANDS.map(async (brandKey) => {
-        const [campaigns, totalSales] = await Promise.all([
+        const config = BRANDS_CONFIG[brandKey];
+        const [campaigns, totalSales, dspData] = await Promise.all([
           getBrandDailyData(brandKey, dateStr),
           getBrandTotalSales(brandKey, dateStr),
+          getDailyDspData(config.schema, dateStr),
         ]);
-        return { brandKey, campaigns, totalSales };
+
+        // Currency conversion for DSP
+        let dspSpend = dspData.spend;
+        let dspSales = dspData.sales;
+        const currency = config.currency ?? "USD";
+        if (currency !== "USD") {
+          const rate = await getExchangeRate(currency);
+          dspSpend = Math.round(dspSpend * rate * 100) / 100;
+          dspSales = Math.round(dspSales * rate * 100) / 100;
+        }
+
+        return { brandKey, campaigns, totalSales, dspSpend, dspSales };
       }),
     ]);
-
-    // Build DSP lookup
-    const dspLookup: Record<string, { spend: number; sales: number }> = {};
-    for (const entry of dspEntries) {
-      dspLookup[entry.brand_key] = { spend: entry.spend, sales: entry.sales };
-    }
 
     // Build per-brand response
     const brands: Record<string, BrandDailyData> = {};
 
-    for (const { brandKey, campaigns, totalSales } of brandResults) {
+    for (const { brandKey, campaigns, totalSales, dspSpend, dspSales } of brandResults) {
       const config = BRANDS_CONFIG[brandKey];
 
       // Get bloomifi spend for this brand's schema
       const bloomifiSpendValue = bloomifiSpend[config.schema] || 0;
-
-      // Get DSP values
-      const dsp = dspLookup[brandKey] || { spend: 0, sales: 0 };
 
       // Calculate totals from campaign rows
       let totalAdSpend = 0;
@@ -54,7 +58,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Add bloomifi + DSP to total spend
-      const totalSpend = totalAdSpend + bloomifiSpendValue + dsp.spend;
+      const totalSpend = totalAdSpend + bloomifiSpendValue + dspSpend;
 
       // ROAS = Ad Sales / Ad Spend (campaign rows only)
       const roas = totalAdSpend > 0 ? Math.round((totalAdSales / totalAdSpend) * 100) / 100 : 0;
@@ -67,8 +71,8 @@ export async function GET(request: NextRequest) {
         campaigns,
         total_sales: totalSales,
         bloomifi_spend: bloomifiSpendValue,
-        dsp_spend: dsp.spend,
-        dsp_sales: dsp.sales,
+        dsp_spend: dspSpend,
+        dsp_sales: dspSales,
         total_ad_spend: totalAdSpend,
         total_ad_sales: totalAdSales,
         roas,

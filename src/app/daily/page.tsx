@@ -12,6 +12,7 @@ import { BrandSummaryTable } from "@/components/daily/brand-summary-table";
 import { DailyTable } from "@/components/daily/daily-table";
 import { BrandCardsGrid } from "@/components/daily/brand-cards-grid";
 import { HighlightProvider } from "@/components/highlights/highlight-context";
+import { SpendLegend } from "@/components/shared/spend-legend";
 import type { DailyResponse } from "@/lib/types";
 
 type ViewMode = "summary" | "cards" | "spreadsheet";
@@ -63,7 +64,10 @@ export default function DailyPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-slate-900">Daily Performance</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-semibold text-slate-900">Daily Performance</h2>
+          <SpendLegend />
+        </div>
         <div className="flex items-center gap-2">
           {/* View mode toggle */}
           <div className="flex items-center border rounded-md overflow-hidden mr-2">

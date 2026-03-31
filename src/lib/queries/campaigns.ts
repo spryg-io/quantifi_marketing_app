@@ -2,6 +2,62 @@ import pool from "@/lib/db/postgres";
 import type { CampaignRow } from "@/lib/types";
 
 /**
+ * Get daily DSP spend + sales for a brand schema.
+ * Columns: total_cost (spend), total_sales (sales)
+ */
+export async function getDailyDspData(
+  schema: string,
+  targetDate: string
+): Promise<{ spend: number; sales: number }> {
+  const query = `
+    SELECT
+      COALESCE(SUM(total_cost), 0) as spend,
+      COALESCE(SUM(total_sales), 0) as sales
+    FROM ${schema}.advertising_dspcampaignreport
+    WHERE date = $1
+  `;
+
+  try {
+    const result = await pool.query(query, [targetDate]);
+    return {
+      spend: parseFloat(result.rows[0].spend),
+      sales: parseFloat(result.rows[0].sales),
+    };
+  } catch (error) {
+    console.error(`DSP daily error for ${schema}:`, error);
+    return { spend: 0, sales: 0 };
+  }
+}
+
+/**
+ * Get monthly DSP spend + sales for a brand schema.
+ */
+export async function getMonthlyDspSpend(
+  schema: string,
+  startDate: string,
+  endDate: string
+): Promise<{ spend: number; sales: number }> {
+  const query = `
+    SELECT
+      COALESCE(SUM(total_cost), 0) as spend,
+      COALESCE(SUM(total_sales), 0) as sales
+    FROM ${schema}.advertising_dspcampaignreport
+    WHERE date >= $1 AND date <= $2
+  `;
+
+  try {
+    const result = await pool.query(query, [startDate, endDate]);
+    return {
+      spend: parseFloat(result.rows[0].spend),
+      sales: parseFloat(result.rows[0].sales),
+    };
+  } catch (error) {
+    console.error(`DSP monthly error for ${schema}:`, error);
+    return { spend: 0, sales: 0 };
+  }
+}
+
+/**
  * Query SP, SB, SD campaign tables for a given brand schema and date.
  * Faithful translation of MarketingDataPuller.get_daily_campaign_data()
  */

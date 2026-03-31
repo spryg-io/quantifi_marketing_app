@@ -100,14 +100,6 @@ export interface BrandDetailResponse {
   };
 }
 
-export interface DspEntry {
-  id?: number;
-  brand_key: string;
-  date: string;
-  spend: number;
-  sales: number;
-}
-
 export interface CellHighlight {
   page: string;
   context_date: string;

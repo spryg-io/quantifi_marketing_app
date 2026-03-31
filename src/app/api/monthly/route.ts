@@ -6,10 +6,9 @@ import {
   MASTER_TAB_GROUP_SIZE,
   ALL_BRANDS,
 } from "@/lib/constants";
-import { getMonthlyAdSpend } from "@/lib/queries/campaigns";
+import { getMonthlyAdSpend, getMonthlyDspSpend } from "@/lib/queries/campaigns";
 import { getMonthlySales } from "@/lib/queries/sales";
 import { getBloomifiMonthlySpend } from "@/lib/queries/bloomifi";
-import { getDspMonthlyTotals } from "@/lib/db/sqlite";
 import { getExchangeRate } from "@/lib/currency";
 import type { MonthlyBrandGroup, MonthlyResponse } from "@/lib/types";
 
@@ -33,36 +32,48 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all data in parallel
-    const [bloomifiSpend, dspTotals, ...brandResults] = await Promise.all([
+    const [bloomifiSpend, ...brandResults] = await Promise.all([
       getBloomifiMonthlySpend(startDate, endDate),
-      Promise.resolve(getDspMonthlyTotals(monthStr)),
       ...Array.from(brandKeysNeeded).map(async (brandKey) => {
         const config = BRANDS_CONFIG[brandKey];
-        if (!config) return { brandKey, spend: 0, sales: 0 };
+        if (!config) return { brandKey, spend: 0, sales: 0, dspSpend: 0, dspSales: 0 };
 
-        const [spend, sales] = await Promise.all([
+        const [spend, sales, dsp] = await Promise.all([
           getMonthlyAdSpend(config.schema, startDate, endDate),
           getMonthlySales(config.schema, startDate, endDate, config.sales_channel),
+          getMonthlyDspSpend(config.schema, startDate, endDate),
         ]);
 
         // Currency conversion
         const currency = config.currency ?? "USD";
         let convertedSpend = spend;
         let convertedSales = sales;
+        let convertedDspSpend = dsp.spend;
+        let convertedDspSales = dsp.sales;
         if (currency !== "USD") {
           const rate = await getExchangeRate(currency);
           convertedSpend = Math.round(spend * rate * 100) / 100;
           convertedSales = Math.round(sales * rate * 100) / 100;
+          convertedDspSpend = Math.round(dsp.spend * rate * 100) / 100;
+          convertedDspSales = Math.round(dsp.sales * rate * 100) / 100;
         }
 
-        return { brandKey, spend: convertedSpend, sales: convertedSales };
+        return {
+          brandKey,
+          spend: convertedSpend,
+          sales: convertedSales,
+          dspSpend: convertedDspSpend,
+          dspSales: convertedDspSales,
+        };
       }),
     ]);
 
     // Build DB totals lookup
     const dbTotals: Record<string, { spend: number; sales: number }> = {};
+    const dspTotals: Record<string, { spend: number; sales: number }> = {};
     for (const r of brandResults) {
       dbTotals[r.brandKey] = { spend: r.spend, sales: r.sales };
+      dspTotals[r.brandKey] = { spend: r.dspSpend, sales: r.dspSales };
     }
 
     // Build bloomifi spend by brand_key
