@@ -104,6 +104,61 @@ export async function getCampaignDataRange(
 }
 
 /**
+ * Query SP, SB, SD campaign tables for a date range, grouped by date.
+ * Returns a map of date string -> CampaignRow[].
+ * Used by brand detail page to avoid per-day queries.
+ */
+export async function getCampaignDataRangeGrouped(
+  schema: string,
+  startDate: string,
+  endDate: string
+): Promise<Record<string, CampaignRow[]>> {
+  const query = `
+    SELECT date::text as date, campaign_name,
+           COALESCE(spend, 0) as spend,
+           COALESCE(sales_14d, 0) as sales,
+           'SP' as ad_type
+    FROM ${schema}.advertising_spcampaignreport
+    WHERE date >= $1 AND date <= $2
+    UNION ALL
+    SELECT date::text as date, campaign_name,
+           COALESCE(cost, 0) as spend,
+           COALESCE(attributed_sales_14d, 0) as sales,
+           'SB' as ad_type
+    FROM ${schema}.advertising_sbcampaignreport
+    WHERE date >= $1 AND date <= $2
+    UNION ALL
+    SELECT date::text as date, campaign_name,
+           COALESCE(spend, 0) as spend,
+           COALESCE(sales, 0) as sales,
+           'SD' as ad_type
+    FROM ${schema}.advertising_sdcampaignreport
+    WHERE date >= $1 AND date <= $2
+  `;
+
+  try {
+    const result = await pool.query(query, [startDate, endDate]);
+    const grouped: Record<string, CampaignRow[]> = {};
+
+    for (const row of result.rows) {
+      const dateKey = row.date;
+      if (!grouped[dateKey]) grouped[dateKey] = [];
+      grouped[dateKey].push({
+        campaign_name: row.campaign_name,
+        spend: parseFloat(row.spend),
+        sales: parseFloat(row.sales),
+        ad_type: row.ad_type,
+      });
+    }
+
+    return grouped;
+  } catch (error) {
+    console.error(`Campaign range grouped error for ${schema}:`, error);
+    return {};
+  }
+}
+
+/**
  * Query SP, SB, SD campaign tables for a given brand schema and date.
  * Faithful translation of MarketingDataPuller.get_daily_campaign_data()
  */
