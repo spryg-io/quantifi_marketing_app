@@ -9,6 +9,6 @@ export interface PortalUser {
 
 export async function verifyPortalToken(token: string): Promise<PortalUser> {
   const secret = new TextEncoder().encode(PORTAL_JWT_SECRET)
-  const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"] })
+  const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"], issuer: "quantifi-portal" })
   return { name: (payload.name as string) || "", email: payload.email as string }
 }
