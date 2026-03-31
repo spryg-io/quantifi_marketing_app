@@ -2,20 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { format, subDays, addDays } from "date-fns";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, LayoutGrid, Table2, SquareStack } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SummaryCards } from "@/components/daily/summary-cards";
-import { BrandSummaryTable } from "@/components/daily/brand-summary-table";
-import { DailyTable } from "@/components/daily/daily-table";
 import { BrandCardsGrid } from "@/components/daily/brand-cards-grid";
 import { HighlightProvider } from "@/components/highlights/highlight-context";
 import { SpendLegend } from "@/components/shared/spend-legend";
 import type { DailyResponse } from "@/lib/types";
-
-type ViewMode = "summary" | "cards" | "spreadsheet";
 
 export default function DailyPage() {
   const [date, setDate] = useState<Date | null>(null);
@@ -23,7 +19,6 @@ export default function DailyPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("cards");
 
   // Initialize date on client only to avoid hydration mismatch
   useEffect(() => {
@@ -69,13 +64,6 @@ export default function DailyPage() {
           <SpendLegend />
         </div>
         <div className="flex items-center gap-2">
-          {/* View mode toggle */}
-          <div className="flex items-center border rounded-md overflow-hidden mr-2">
-            <ViewToggle active={viewMode === "cards"} onClick={() => setViewMode("cards")} icon={SquareStack} label="Cards" />
-            <ViewToggle active={viewMode === "summary"} onClick={() => setViewMode("summary")} icon={LayoutGrid} label="Summary" border />
-            <ViewToggle active={viewMode === "spreadsheet"} onClick={() => setViewMode("spreadsheet")} icon={Table2} label="Spreadsheet" border />
-          </div>
-
           <Button variant="outline" size="icon" onClick={goToPrevDay} disabled={!date}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -132,57 +120,12 @@ export default function DailyPage() {
         <HighlightProvider page="daily" contextDate={date ? format(date, "yyyy-MM-dd") : ""}>
           <SummaryCards brands={data.brands} brandOrder={allBrandOrder} />
 
-          {viewMode === "summary" && (
-            <BrandSummaryTable
-              brands={data.brands}
-              brandOrder={allBrandOrder}
-            />
-          )}
-          {viewMode === "cards" && (
-            <BrandCardsGrid
-              brands={data.brands}
-              brandOrder={allBrandOrder}
-            />
-          )}
-          {viewMode === "spreadsheet" && (
-            <DailyTable
-              brands={data.brands}
-              brandOrder={allBrandOrder}
-              rowLabels={data.row_labels}
-            />
-          )}
+          <BrandCardsGrid
+            brands={data.brands}
+            brandOrder={allBrandOrder}
+          />
         </HighlightProvider>
       ) : null}
     </div>
-  );
-}
-
-function ViewToggle({
-  active,
-  onClick,
-  icon: Icon,
-  label,
-  border,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  border?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
-        border ? "border-l " : ""
-      }${
-        active
-          ? "bg-slate-900 text-white"
-          : "bg-white text-slate-600 hover:bg-slate-50"
-      }`}
-    >
-      <Icon className="h-3.5 w-3.5" />
-      {label}
-    </button>
   );
 }
