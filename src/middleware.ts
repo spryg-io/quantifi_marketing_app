@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { verifyPortalToken } from "@/lib/verify-portal-token"
 
-const PORTAL_LOGIN_URL = "https://quantifi.tools/login"
+const PORTAL_LOGIN_URL = "https://portal.quantifi.tools/login"
 
 export async function middleware(req: NextRequest) {
   // Skip auth for health/status checks
