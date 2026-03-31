@@ -1,8 +1,8 @@
 import { format, startOfMonth } from "date-fns";
 import { ROW_LABELS, BRANDS_CONFIG } from "@/lib/constants";
 import { getExchangeRate } from "@/lib/currency";
-import { getDailyCampaignData, getCampaignDataRange } from "./campaigns";
-import { getDailyTotalSales } from "./sales";
+import { getDailyCampaignData, getCampaignDataRange, getCampaignDataRangeGrouped } from "./campaigns";
+import { getDailyTotalSales, getDailyTotalSalesRange } from "./sales";
 import type { CampaignRow, AggregatedMetrics } from "@/lib/types";
 
 /**
@@ -86,6 +86,89 @@ export async function getBrandDailyData(
   }
 
   return result;
+}
+
+/**
+ * Get aggregated daily data for a single brand across an entire date range,
+ * returned as a map of date -> Record<label, AggregatedMetrics>.
+ * Single DB query instead of per-day queries.
+ */
+export async function getBrandDailyDataRange(
+  brandKey: string,
+  startDate: string,
+  endDate: string
+): Promise<Record<string, Record<string, AggregatedMetrics>>> {
+  const config = BRANDS_CONFIG[brandKey];
+  const emptyDay = Object.fromEntries(
+    ROW_LABELS.map((r) => [r.label, { spend: 0, sales: 0, roas: 0 }])
+  );
+
+  if (!config) return {};
+
+  const groupedCampaigns = await getCampaignDataRangeGrouped(
+    config.schema,
+    startDate,
+    endDate
+  );
+
+  // Currency conversion rate (fetched once, not per-day)
+  const currency = config.currency ?? "USD";
+  let rate = 1.0;
+  if (currency !== "USD") {
+    rate = await getExchangeRate(currency);
+  }
+
+  const result: Record<string, Record<string, AggregatedMetrics>> = {};
+
+  for (const [dateStr, campaigns] of Object.entries(groupedCampaigns)) {
+    if (campaigns.length === 0) {
+      result[dateStr] = { ...emptyDay };
+      continue;
+    }
+
+    const aggregated = aggregateByPattern(campaigns);
+
+    if (rate !== 1.0) {
+      for (const data of Object.values(aggregated)) {
+        data.spend = Math.round(data.spend * rate * 100) / 100;
+        data.sales = Math.round(data.sales * rate * 100) / 100;
+      }
+    }
+
+    result[dateStr] = aggregated;
+  }
+
+  return result;
+}
+
+/**
+ * Get total sales for a brand across a date range, grouped by date.
+ * Single DB query instead of per-day queries.
+ */
+export async function getBrandTotalSalesRange(
+  brandKey: string,
+  startDate: string,
+  endDate: string
+): Promise<Record<string, number>> {
+  const config = BRANDS_CONFIG[brandKey];
+  if (!config) return {};
+
+  const salesByDate = await getDailyTotalSalesRange(
+    config.schema,
+    startDate,
+    endDate,
+    config.sales_channel
+  );
+
+  const currency = config.currency ?? "USD";
+  if (currency !== "USD") {
+    const rate = await getExchangeRate(currency);
+    for (const dateStr of Object.keys(salesByDate)) {
+      salesByDate[dateStr] = Math.round(salesByDate[dateStr] * rate * 100) / 100;
+    }
+  }
+
+  return salesByDate;
 }
 
 /**
