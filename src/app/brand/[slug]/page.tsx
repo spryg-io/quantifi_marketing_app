@@ -10,6 +10,8 @@ import { CampaignBreakdown } from "@/components/brand/campaign-breakdown";
 import { MetricsGrid } from "@/components/brand/metrics-grid";
 import { BRANDS_CONFIG, ALL_BRANDS } from "@/lib/constants";
 import type { BrandDetailResponse } from "@/lib/types";
+import { RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function BrandPage() {
   const router = useRouter();
@@ -30,12 +32,14 @@ export default function BrandPage() {
     });
   }, []);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (refresh = false) => {
     if (!dateRange) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/brand/${slug}?from=${dateRange.from}&to=${dateRange.to}`);
+      const params = new URLSearchParams({ from: dateRange.from, to: dateRange.to });
+      if (refresh) params.set("refresh", "true");
+      const res = await fetch(`/api/brand/${slug}?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       setData(json);
@@ -45,6 +49,8 @@ export default function BrandPage() {
       setLoading(false);
     }
   }, [slug, dateRange]);
+
+  const handleRefresh = () => fetchData(true);
 
   useEffect(() => {
     fetchData();
@@ -69,13 +75,18 @@ export default function BrandPage() {
             {data?.display_name || BRANDS_CONFIG[slug]?.display_name || slug}
           </h2>
         </div>
-        {dateRange ? (
-          <span className="text-sm text-muted-foreground">
-            {dateRange.from} to {dateRange.to}
-          </span>
-        ) : (
-          <Skeleton className="h-5 w-48 rounded" />
-        )}
+        <div className="flex items-center gap-2">
+          {dateRange ? (
+            <span className="text-sm text-muted-foreground">
+              {dateRange.from} to {dateRange.to}
+            </span>
+          ) : (
+            <Skeleton className="h-5 w-48 rounded" />
+          )}
+          <Button variant="outline" size="icon" onClick={handleRefresh} disabled={!dateRange || loading} title="Refresh data">
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
       </div>
 
       {error && (

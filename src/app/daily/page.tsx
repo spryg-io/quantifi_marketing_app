@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { format, subDays, addDays } from "date-fns";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -25,12 +25,14 @@ export default function DailyPage() {
     setDate(subDays(new Date(), 1));
   }, []);
 
-  const fetchData = useCallback(async (d: Date) => {
+  const fetchData = useCallback(async (d: Date, refresh = false) => {
     setLoading(true);
     setError(null);
     try {
       const dateStr = format(d, "yyyy-MM-dd");
-      const res = await fetch(`/api/daily?date=${dateStr}`);
+      const params = new URLSearchParams({ date: dateStr });
+      if (refresh) params.set("refresh", "true");
+      const res = await fetch(`/api/daily?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       setData(json);
@@ -48,6 +50,7 @@ export default function DailyPage() {
   const goToPrevDay = () => setDate((d) => d ? subDays(d, 1) : null);
   const goToNextDay = () => setDate((d) => d ? addDays(d, 1) : null);
   const goToYesterday = () => setDate(subDays(new Date(), 1));
+  const handleRefresh = () => { if (date) fetchData(date, true); };
 
   const allBrandOrder = [
     ...(data?.brand_order || []),
@@ -95,6 +98,9 @@ export default function DailyPage() {
             <ChevronRight className="h-4 w-4" />
           </Button>
 
+          <Button variant="outline" size="icon" onClick={handleRefresh} disabled={!date || loading} title="Refresh data">
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
           <Button variant="secondary" size="sm" onClick={goToYesterday}>
             Yesterday
           </Button>

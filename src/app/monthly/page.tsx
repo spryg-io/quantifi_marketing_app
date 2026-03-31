@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { format, subMonths, addMonths } from "date-fns";
-import { ChevronLeft, ChevronRight, SquareStack, LayoutGrid, Table2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, SquareStack, LayoutGrid, Table2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MonthlySummaryCards } from "@/components/monthly/monthly-summary-cards";
@@ -27,12 +27,14 @@ export default function MonthlyPage() {
     setMonthDate(new Date());
   }, []);
 
-  const fetchData = useCallback(async (d: Date) => {
+  const fetchData = useCallback(async (d: Date, refresh = false) => {
     setLoading(true);
     setError(null);
     try {
       const monthStr = format(d, "yyyy-MM");
-      const res = await fetch(`/api/monthly?month=${monthStr}`);
+      const params = new URLSearchParams({ month: monthStr });
+      if (refresh) params.set("refresh", "true");
+      const res = await fetch(`/api/monthly?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       setData(json);
@@ -50,6 +52,7 @@ export default function MonthlyPage() {
   const goToPrevMonth = () => setMonthDate((d) => d ? subMonths(d, 1) : null);
   const goToNextMonth = () => setMonthDate((d) => d ? addMonths(d, 1) : null);
   const goToThisMonth = () => setMonthDate(new Date());
+  const handleRefresh = () => { if (monthDate) fetchData(monthDate, true); };
 
   const showLoading = !monthDate || loading;
 
@@ -82,6 +85,9 @@ export default function MonthlyPage() {
             <ChevronRight className="h-4 w-4" />
           </Button>
 
+          <Button variant="outline" size="icon" onClick={handleRefresh} disabled={!monthDate || loading} title="Refresh data">
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
           <Button variant="secondary" size="sm" onClick={goToThisMonth}>
             This Month
           </Button>
