@@ -17,7 +17,7 @@ const ROW_LABEL_LIST = ROW_LABELS.map((r) => r.label);
 
 export function BrandCardsGrid({ brands, brandOrder }: BrandCardsGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {brandOrder.map((key) => {
         const b = brands[key];
         if (!b) return null;
@@ -98,7 +98,7 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
       {/* Campaign breakdown */}
       {hasActivity && (
         <div className="border-t border-slate-100 bg-slate-50/50">
-          <table className="text-xs w-full">
+          <table className="text-sm w-full">
             <thead>
               <tr className="text-slate-500 border-b border-slate-200/60">
                 <th className="text-left py-1.5 pl-4 pr-2 font-medium">Type</th>
@@ -157,8 +157,8 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
 function Metric({ label, value, subtle }: { label: string; value: string; subtle?: boolean }) {
   return (
     <div className={cn("px-3 py-2.5", subtle && "py-2")}>
-      <p className={cn("text-xs text-slate-500", subtle && "text-[11px]")}>{label}</p>
-      <p className={cn("font-semibold tabular-nums mt-0.5", subtle ? "text-sm text-slate-600" : "text-base")}>
+      <p className={cn("text-sm text-slate-500", subtle && "text-xs")}>{label}</p>
+      <p className={cn("font-semibold tabular-nums mt-0.5", subtle ? "text-base text-slate-600" : "text-lg")}>
         {value}
       </p>
     </div>

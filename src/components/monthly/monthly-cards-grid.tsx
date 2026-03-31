@@ -28,7 +28,7 @@ const BRAND_SLUG_MAP: Record<string, string> = {
 
 export function MonthlyCardsGrid({ brandGroups }: MonthlyCardsGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {brandGroups.map((group) => (
         <MonthlyBrandCard key={group.display_name} group={group} />
       ))}
@@ -99,7 +99,7 @@ function MonthlyBrandCard({ group }: { group: MonthlyBrandGroup }) {
 
       {/* Breakdown */}
       <div className="border-t border-slate-100 bg-slate-50/50">
-        <table className="text-xs w-full">
+        <table className="text-sm w-full">
           <thead>
             <tr className="text-slate-500 border-b border-slate-200/60">
               <th className="text-left py-1.5 pl-4 pr-2 font-medium">Source</th>
@@ -139,8 +139,8 @@ function MonthlyBrandCard({ group }: { group: MonthlyBrandGroup }) {
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="px-3 py-2.5">
-      <p className="text-xs text-slate-500">{label}</p>
-      <p className="font-semibold tabular-nums mt-0.5 text-base">{value}</p>
+      <p className="text-sm text-slate-500">{label}</p>
+      <p className="font-semibold tabular-nums mt-0.5 text-lg">{value}</p>
     </div>
   );
 }

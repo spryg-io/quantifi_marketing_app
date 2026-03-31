@@ -29,8 +29,8 @@ export function HighlightableMetric({ cellKey, label, value, subtle }: Highlight
       style={color ? { backgroundColor: color } : undefined}
       onContextMenu={handleContextMenu}
     >
-      <p className={cn("text-xs text-slate-500", subtle && "text-[11px]")}>{label}</p>
-      <p className={cn("font-semibold tabular-nums mt-0.5", subtle ? "text-sm text-slate-600" : "text-base")}>
+      <p className={cn("text-sm text-slate-500", subtle && "text-xs")}>{label}</p>
+      <p className={cn("font-semibold tabular-nums mt-0.5", subtle ? "text-base text-slate-600" : "text-lg")}>
         {value}
       </p>
       {picker && (
