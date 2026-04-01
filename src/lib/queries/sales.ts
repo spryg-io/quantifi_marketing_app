@@ -2,7 +2,6 @@ import pool from "@/lib/db/postgres";
 
 /**
  * Get total sales for a brand on a given date from sales_order table.
- * Uses index-friendly range comparison on purchase_date.
  */
 export async function getDailyTotalSales(
   schema: string,
@@ -13,8 +12,7 @@ export async function getDailyTotalSales(
   const query = `
     SELECT COALESCE(SUM(item_price), 0) as total_sales
     FROM ${schema}.sales_order
-    WHERE purchase_date >= ($1::date)::timestamp AT TIME ZONE 'America/Los_Angeles'
-      AND purchase_date < (($1::date) + 1)::timestamp AT TIME ZONE 'America/Los_Angeles'
+    WHERE DATE(purchase_date AT TIME ZONE 'America/Los_Angeles') = $1
     ${channelFilter}
   `;
 
@@ -32,7 +30,6 @@ export async function getDailyTotalSales(
 
 /**
  * Get monthly total sales from sales_order table.
- * Uses index-friendly range comparison on purchase_date.
  */
 export async function getMonthlySales(
   schema: string,
@@ -44,8 +41,8 @@ export async function getMonthlySales(
   const query = `
     SELECT COALESCE(SUM(item_price), 0) as total_sales
     FROM ${schema}.sales_order
-    WHERE purchase_date >= ($1::date)::timestamp AT TIME ZONE 'America/Los_Angeles'
-      AND purchase_date < (($2::date) + 1)::timestamp AT TIME ZONE 'America/Los_Angeles'
+    WHERE DATE(purchase_date AT TIME ZONE 'America/Los_Angeles') >= $1
+      AND DATE(purchase_date AT TIME ZONE 'America/Los_Angeles') <= $2
     ${channelFilter}
   `;
 
