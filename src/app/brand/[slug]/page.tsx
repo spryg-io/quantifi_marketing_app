@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { format, startOfMonth, subDays } from "date-fns";
+import { format } from "date-fns";
+import { getDefaultBrandDateRange } from "@/lib/dates";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendChart } from "@/components/brand/trend-chart";
@@ -24,13 +25,8 @@ export default function BrandPage() {
   const [dateRange, setDateRange] = useState<{ from: string; to: string } | null>(null);
 
   // Initialize date range on client only to avoid hydration mismatch
-  // Anchor to yesterday so on the 1st of a month we show the previous month
   useEffect(() => {
-    const yesterday = subDays(new Date(), 1);
-    setDateRange({
-      from: format(startOfMonth(yesterday), "yyyy-MM-dd"),
-      to: format(yesterday, "yyyy-MM-dd"),
-    });
+    setDateRange(getDefaultBrandDateRange());
   }, []);
 
   const fetchData = useCallback(async (refresh = false) => {

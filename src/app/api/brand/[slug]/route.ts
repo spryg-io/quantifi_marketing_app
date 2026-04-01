@@ -3,6 +3,7 @@ import { format, startOfMonth, eachDayOfInterval, parse } from "date-fns";
 import { BRANDS_CONFIG, ROW_LABELS } from "@/lib/constants";
 import { getBrandDailyDataRange, getBrandTotalSalesRange } from "@/lib/queries/aggregation";
 import { getCached } from "@/lib/cache";
+import { normalizeRange } from "@/lib/dates";
 import type { BrandDetailResponse, BrandTimeSeriesPoint, BrandCampaignBreakdown } from "@/lib/types";
 
 export async function GET(
@@ -28,14 +29,15 @@ export async function GET(
     const response = await getCached<BrandDetailResponse>(
       cacheKey,
       async () => {
-        const fromDate = parse(fromStr, "yyyy-MM-dd", new Date());
-        const toDate = parse(toStr, "yyyy-MM-dd", new Date());
+        const { from: actualFrom, to: actualTo } = normalizeRange(fromStr, toStr);
+        const fromDate = parse(actualFrom, "yyyy-MM-dd", new Date());
+        const toDate = parse(actualTo, "yyyy-MM-dd", new Date());
         const days = eachDayOfInterval({ start: fromDate, end: toDate });
 
         // Two queries instead of 2 * days.length
         const [campaignsByDate, salesByDate] = await Promise.all([
-          getBrandDailyDataRange(slug, fromStr, toStr),
-          getBrandTotalSalesRange(slug, fromStr, toStr),
+          getBrandDailyDataRange(slug, actualFrom, actualTo),
+          getBrandTotalSalesRange(slug, actualFrom, actualTo),
         ]);
 
         // Build time series
@@ -94,8 +96,8 @@ export async function GET(
         return {
           brand_key: slug,
           display_name: config.display_name,
-          from: fromStr,
-          to: toStr,
+          from: actualFrom,
+          to: actualTo,
           time_series: timeSeries,
           campaign_breakdown: campaignBreakdown,
           totals: {

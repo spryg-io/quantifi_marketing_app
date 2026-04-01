@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { format, subMonths, addMonths } from "date-fns";
+import { getDefaultMonth } from "@/lib/dates";
 import { ChevronLeft, ChevronRight, SquareStack, LayoutGrid, Table2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,7 +25,7 @@ export default function MonthlyPage() {
 
   // Initialize on client only to avoid hydration mismatch
   useEffect(() => {
-    setMonthDate(new Date());
+    setMonthDate(getDefaultMonth());
   }, []);
 
   const fetchData = useCallback(async (d: Date, refresh = false) => {
