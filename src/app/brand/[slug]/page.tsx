@@ -24,11 +24,12 @@ export default function BrandPage() {
   const [dateRange, setDateRange] = useState<{ from: string; to: string } | null>(null);
 
   // Initialize date range on client only to avoid hydration mismatch
+  // Anchor to yesterday so on the 1st of a month we show the previous month
   useEffect(() => {
-    const now = new Date();
+    const yesterday = subDays(new Date(), 1);
     setDateRange({
-      from: format(startOfMonth(now), "yyyy-MM-dd"),
-      to: format(subDays(now, 1), "yyyy-MM-dd"),
+      from: format(startOfMonth(yesterday), "yyyy-MM-dd"),
+      to: format(yesterday, "yyyy-MM-dd"),
     });
   }, []);
 
