@@ -7,6 +7,7 @@ import { getDailyDspData } from "@/lib/queries/campaigns";
 import { getExchangeRate } from "@/lib/currency";
 import type { BrandDailyData, DailyResponse } from "@/lib/types";
 import { getCached } from "@/lib/cache";
+import { checkFreshness } from "@/lib/queries/freshness";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -90,12 +91,15 @@ export async function GET(request: NextRequest) {
           };
         }
 
+        const freshness = await checkFreshness(dateStr);
+
         return {
           date: dateStr,
           brands,
           brand_order: BRAND_ORDER,
           sbl_brand_order: SBL_BRAND_ORDER,
           row_labels: ROW_LABELS.map((r) => r.label),
+          freshness,
         };
       },
       { bypass: refresh }

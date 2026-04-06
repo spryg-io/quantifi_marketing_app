@@ -10,6 +10,7 @@ import { TrendChart } from "@/components/brand/trend-chart";
 import { CampaignBreakdown } from "@/components/brand/campaign-breakdown";
 import { MetricsGrid } from "@/components/brand/metrics-grid";
 import { BRANDS_CONFIG, ALL_BRANDS } from "@/lib/constants";
+import { BrandFreshnessBanner } from "@/components/shared/data-freshness-banner";
 import type { BrandDetailResponse } from "@/lib/types";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -104,6 +105,12 @@ export default function BrandPage() {
         </div>
       ) : data ? (
         <>
+          {data.freshness && (
+            <BrandFreshnessBanner
+              freshness={data.freshness}
+              brandName={data.display_name}
+            />
+          )}
           <MetricsGrid totals={data.totals} />
 
           <Card>

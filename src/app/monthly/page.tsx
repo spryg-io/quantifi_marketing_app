@@ -12,6 +12,7 @@ import { MonthlyBrandTable } from "@/components/monthly/monthly-brand-table";
 import { MonthlyTable } from "@/components/monthly/monthly-table";
 import { HighlightProvider } from "@/components/highlights/highlight-context";
 import { SpendLegend } from "@/components/shared/spend-legend";
+import { DataFreshnessBanner } from "@/components/shared/data-freshness-banner";
 import type { MonthlyResponse } from "@/lib/types";
 
 type ViewMode = "cards" | "summary" | "spreadsheet";
@@ -112,6 +113,7 @@ export default function MonthlyPage() {
         </div>
       ) : data ? (
         <HighlightProvider page="monthly" contextDate={monthDate ? format(monthDate, "yyyy-MM") : ""}>
+          {data.freshness && <DataFreshnessBanner freshness={data.freshness} />}
           <MonthlySummaryCards brandGroups={data.brand_groups} />
 
           {viewMode === "cards" && (

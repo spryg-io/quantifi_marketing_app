@@ -44,6 +44,7 @@ export interface DailyResponse {
   brand_order: string[];
   sbl_brand_order: string[];
   row_labels: string[];
+  freshness?: Record<string, BrandFreshness>;
 }
 
 export interface MasterTabBrandConfig {
@@ -68,6 +69,7 @@ export interface MonthlyResponse {
   month: string;
   year: number;
   brand_groups: MonthlyBrandGroup[];
+  freshness?: Record<string, BrandFreshness>;
 }
 
 export interface BrandTimeSeriesPoint {
@@ -99,6 +101,7 @@ export interface BrandDetailResponse {
     total_sales: number;
     troas: number;
   };
+  freshness?: BrandFreshness;
 }
 
 export interface CellHighlight {
@@ -109,3 +112,9 @@ export interface CellHighlight {
 }
 
 export type HighlightMap = Record<string, string>;
+
+export interface BrandFreshness {
+  status: "ok" | "stale" | "missing";
+  latest_campaign: string | null;
+  latest_sales: string | null;
+}

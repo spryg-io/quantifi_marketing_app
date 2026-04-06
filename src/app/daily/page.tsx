@@ -11,6 +11,7 @@ import { SummaryCards } from "@/components/daily/summary-cards";
 import { BrandCardsGrid } from "@/components/daily/brand-cards-grid";
 import { HighlightProvider } from "@/components/highlights/highlight-context";
 import { SpendLegend } from "@/components/shared/spend-legend";
+import { DataFreshnessBanner } from "@/components/shared/data-freshness-banner";
 import type { DailyResponse } from "@/lib/types";
 
 export default function DailyPage() {
@@ -124,6 +125,7 @@ export default function DailyPage() {
         </div>
       ) : data ? (
         <HighlightProvider page="daily" contextDate={date ? format(date, "yyyy-MM-dd") : ""}>
+          {data.freshness && <DataFreshnessBanner freshness={data.freshness} />}
           <SummaryCards brands={data.brands} brandOrder={allBrandOrder} />
 
           <BrandCardsGrid

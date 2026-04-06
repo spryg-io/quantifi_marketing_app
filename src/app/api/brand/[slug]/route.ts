@@ -4,6 +4,7 @@ import { BRANDS_CONFIG, ROW_LABELS } from "@/lib/constants";
 import { getBrandDailyDataRange, getBrandTotalSalesRange } from "@/lib/queries/aggregation";
 import { getCached } from "@/lib/cache";
 import { normalizeRange } from "@/lib/dates";
+import { checkBrandFreshness } from "@/lib/queries/freshness";
 import type { BrandDetailResponse, BrandTimeSeriesPoint, BrandCampaignBreakdown } from "@/lib/types";
 
 export async function GET(
@@ -93,6 +94,8 @@ export async function GET(
           sales: Math.round((breakdownAccum[r.label]?.sales || 0) * 100) / 100,
         })).filter((b) => b.spend > 0 || b.sales > 0);
 
+        const freshness = await checkBrandFreshness(slug, actualTo);
+
         return {
           brand_key: slug,
           display_name: config.display_name,
@@ -100,6 +103,7 @@ export async function GET(
           to: actualTo,
           time_series: timeSeries,
           campaign_breakdown: campaignBreakdown,
+          freshness,
           totals: {
             spend: Math.round(totalSpend * 100) / 100,
             sales: Math.round(totalAdSales * 100) / 100,

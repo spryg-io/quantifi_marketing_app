@@ -12,6 +12,7 @@ import { getBloomifiMonthlySpend } from "@/lib/queries/bloomifi";
 import { getExchangeRate } from "@/lib/currency";
 import type { MonthlyBrandGroup, MonthlyResponse } from "@/lib/types";
 import { getCached } from "@/lib/cache";
+import { checkFreshness } from "@/lib/queries/freshness";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -171,10 +172,13 @@ export async function GET(request: NextRequest) {
           brandGroups.push({ display_name: groupName, rows });
         }
 
+        const freshness = await checkFreshness(endDate);
+
         return {
           month: monthStr,
           year: monthDate.getFullYear(),
           brand_groups: brandGroups,
+          freshness,
         };
       },
       { bypass: refresh }
