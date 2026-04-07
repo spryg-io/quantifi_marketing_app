@@ -42,9 +42,10 @@ export interface CalendarProps {
   selected?: Date
   onSelect?: (date: Date) => void
   month?: Date
+  maxDate?: Date
 }
 
-function Calendar({ className, selected, onSelect, month }: CalendarProps) {
+function Calendar({ className, selected, onSelect, month, maxDate }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = React.useState(() => {
     if (month) return new Date(month.getFullYear(), month.getMonth(), 1)
     if (selected)
@@ -151,23 +152,29 @@ function Calendar({ className, selected, onSelect, month }: CalendarProps) {
                 const date = new Date(year, monthIndex, day)
                 const isSelected = selected ? isSameDay(date, selected) : false
                 const isToday = isSameDay(date, today)
+                const isDisabled = maxDate ? date > maxDate && !isSameDay(date, maxDate) : false
 
                 return (
                   <td key={dayIndex} className="h-8 w-8 text-center p-0">
                     <button
                       type="button"
                       onClick={() => handleDayClick(day)}
+                      disabled={isDisabled}
                       className={cn(
                         "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm transition-colors",
-                        "hover:bg-accent hover:text-accent-foreground",
+                        isDisabled
+                          ? "text-muted-foreground/40 cursor-not-allowed"
+                          : "hover:bg-accent hover:text-accent-foreground",
                         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                         isSelected &&
                           "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
                         !isSelected &&
                           isToday &&
+                          !isDisabled &&
                           "bg-accent text-accent-foreground",
                         !isSelected &&
                           !isToday &&
+                          !isDisabled &&
                           "text-foreground"
                       )}
                     >

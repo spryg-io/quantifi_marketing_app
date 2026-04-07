@@ -149,6 +149,7 @@ export default function DailyPage() {
                     setCalendarOpen(false);
                   }}
                   month={date}
+                  maxDate={subDays(new Date(), 1)}
                 />
               </PopoverContent>
             </Popover>
@@ -186,6 +187,7 @@ export default function DailyPage() {
                   selected={compareDate}
                   onSelect={handleCompareDateChange}
                   month={compareDate}
+                  maxDate={subDays(new Date(), 2)}
                 />
               </PopoverContent>
             </Popover>
