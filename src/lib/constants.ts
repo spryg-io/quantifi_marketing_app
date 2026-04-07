@@ -74,6 +74,16 @@ export const BRANDS_CONFIG: Record<string, BrandConfig> = {
     display_name: "TBS",
     sales_channel: "Amazon.com",
   },
+  uplift5: {
+    schema: "uplift",
+    display_name: "Uplift5",
+    sales_channel: "Amazon.com",
+  },
+  mzskin: {
+    schema: "mzskin",
+    display_name: "MZSkin",
+    sales_channel: "Amazon.com",
+  },
 };
 
 export const BRAND_ORDER = [
@@ -83,8 +93,10 @@ export const BRAND_ORDER = [
   "hanni",
   "herbivore",
   "iconic_london",
+  "mzskin",
   "oneskin",
   "tbs",
+  "uplift5",
   "versed",
   "zenagen",
 ];
@@ -156,6 +168,12 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "Iconic (DSP)", source: "sheet" },
   { display_name: "Iconic (Total)", source: "sum_above" },
 
+  // MZSkin group
+  { display_name: "MZSkin (Amazon)", brand_key: "mzskin", source: "database" },
+  { display_name: "MZSkin (Bloomifi)", source: "sheet" },
+  { display_name: "MZSkin (DSP)", source: "sheet" },
+  { display_name: "MZSkin (Total)", source: "sum_above" },
+
   // OneSkin group
   { display_name: "OneSkin (Amazon)", brand_key: "oneskin", source: "database" },
   { display_name: "OneSkin (Bloomifi)", source: "sheet" },
@@ -173,6 +191,12 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "TBS (Bloomifi)", source: "sheet" },
   { display_name: "TBS (DSP)", source: "sheet" },
   { display_name: "TBS (Total)", source: "sum_above" },
+
+  // Uplift5 group
+  { display_name: "Uplift5 (Amazon)", brand_key: "uplift5", source: "database" },
+  { display_name: "Uplift5 (Bloomifi)", source: "sheet" },
+  { display_name: "Uplift5 (DSP)", source: "sheet" },
+  { display_name: "Uplift5 (Total)", source: "sum_above" },
 
   // Versed group
   { display_name: "Versed (Amazon)", brand_key: "versed", source: "database" },

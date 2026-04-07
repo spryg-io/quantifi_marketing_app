@@ -24,6 +24,8 @@ const BRAND_SLUG_MAP: Record<string, string> = {
   Versed: "versed",
   SBL: "sbl_uk",
   TBS: "tbs",
+  MZSkin: "mzskin",
+  Uplift5: "uplift5",
 };
 
 type SortKey = "brand" | "spend" | "sales" | "tacos" | "roas";
