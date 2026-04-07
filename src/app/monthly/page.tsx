@@ -3,26 +3,21 @@
 import { useState, useEffect, useCallback } from "react";
 import { format, subMonths, addMonths } from "date-fns";
 import { getDefaultMonth } from "@/lib/dates";
-import { ChevronLeft, ChevronRight, SquareStack, LayoutGrid, Table2, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MonthlySummaryCards } from "@/components/monthly/monthly-summary-cards";
 import { MonthlyCardsGrid } from "@/components/monthly/monthly-cards-grid";
-import { MonthlyBrandTable } from "@/components/monthly/monthly-brand-table";
-import { MonthlyTable } from "@/components/monthly/monthly-table";
 import { HighlightProvider } from "@/components/highlights/highlight-context";
 import { SpendLegend } from "@/components/shared/spend-legend";
 import { DataFreshnessBanner } from "@/components/shared/data-freshness-banner";
 import type { MonthlyResponse } from "@/lib/types";
-
-type ViewMode = "cards" | "summary" | "spreadsheet";
 
 export default function MonthlyPage() {
   const [monthDate, setMonthDate] = useState<Date | null>(null);
   const [data, setData] = useState<MonthlyResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>("cards");
 
   // Initialize on client only to avoid hydration mismatch
   useEffect(() => {
@@ -66,13 +61,6 @@ export default function MonthlyPage() {
           <SpendLegend />
         </div>
         <div className="flex items-center gap-2">
-          {/* View mode toggle */}
-          <div className="flex items-center border rounded-md overflow-hidden mr-2">
-            <ViewToggle active={viewMode === "cards"} onClick={() => setViewMode("cards")} icon={SquareStack} label="Cards" />
-            <ViewToggle active={viewMode === "summary"} onClick={() => setViewMode("summary")} icon={LayoutGrid} label="Summary" border />
-            <ViewToggle active={viewMode === "spreadsheet"} onClick={() => setViewMode("spreadsheet")} icon={Table2} label="Spreadsheet" border />
-          </div>
-
           <Button variant="outline" size="icon" onClick={goToPrevMonth} disabled={!monthDate}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -115,48 +103,9 @@ export default function MonthlyPage() {
         <HighlightProvider page="monthly" contextDate={monthDate ? format(monthDate, "yyyy-MM") : ""}>
           {data.freshness && <DataFreshnessBanner freshness={data.freshness} />}
           <MonthlySummaryCards brandGroups={data.brand_groups} />
-
-          {viewMode === "cards" && (
-            <MonthlyCardsGrid brandGroups={data.brand_groups} />
-          )}
-          {viewMode === "summary" && (
-            <MonthlyBrandTable brandGroups={data.brand_groups} />
-          )}
-          {viewMode === "spreadsheet" && (
-            <MonthlyTable brandGroups={data.brand_groups} />
-          )}
+          <MonthlyCardsGrid brandGroups={data.brand_groups} />
         </HighlightProvider>
       ) : null}
     </div>
-  );
-}
-
-function ViewToggle({
-  active,
-  onClick,
-  icon: Icon,
-  label,
-  border,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  border?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
-        border ? "border-l " : ""
-      }${
-        active
-          ? "bg-slate-900 text-white"
-          : "bg-white text-slate-600 hover:bg-slate-50"
-      }`}
-    >
-      <Icon className="h-3.5 w-3.5" />
-      {label}
-    </button>
   );
 }

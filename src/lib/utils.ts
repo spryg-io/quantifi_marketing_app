@@ -25,3 +25,11 @@ export function formatPercent(value: number): string {
 export function formatRoas(value: number): string {
   return `$${value.toFixed(2)}`;
 }
+
+export function formatDeltaPercent(current: number, previous: number): string | null {
+  if (current === 0 && previous === 0) return null;
+  if (previous === 0) return "new";
+  const pct = ((current - previous) / previous) * 100;
+  const sign = pct >= 0 ? "+" : "";
+  return `${sign}${pct.toFixed(1)}%`;
+}

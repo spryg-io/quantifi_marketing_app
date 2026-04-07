@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { format, startOfMonth, endOfMonth, parse } from "date-fns";
+import { format, startOfMonth, endOfMonth, subDays, min, parse } from "date-fns";
 import {
   BRANDS_CONFIG,
   MASTER_TAB_BRANDS,
@@ -172,7 +172,9 @@ export async function GET(request: NextRequest) {
           brandGroups.push({ display_name: groupName, rows });
         }
 
-        const freshness = await checkFreshness(endDate);
+        // Cap freshness target at yesterday — today's data isn't expected yet
+        const freshnessTarget = format(min([endOfMonth(monthDate), subDays(new Date(), 1)]), "yyyy-MM-dd");
+        const freshness = await checkFreshness(freshnessTarget);
 
         return {
           month: monthStr,

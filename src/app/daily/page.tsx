@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { format, subDays, addDays } from "date-fns";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, RefreshCw, ArrowLeftRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -20,6 +20,13 @@ export default function DailyPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
+
+  // Comparison state
+  const [compareEnabled, setCompareEnabled] = useState(false);
+  const [compareDate, setCompareDate] = useState<Date | null>(null);
+  const [compareData, setCompareData] = useState<DailyResponse | null>(null);
+  const [compareLoading, setCompareLoading] = useState(false);
+  const [compareCalendarOpen, setCompareCalendarOpen] = useState(false);
 
   // Initialize date on client only to avoid hydration mismatch
   useEffect(() => {
@@ -44,9 +51,54 @@ export default function DailyPage() {
     }
   }, []);
 
+  const fetchCompareData = useCallback(async (d: Date) => {
+    setCompareLoading(true);
+    try {
+      const dateStr = format(d, "yyyy-MM-dd");
+      const res = await fetch(`/api/daily?date=${dateStr}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      setCompareData(json);
+    } catch {
+      setCompareData(null);
+    } finally {
+      setCompareLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (date) fetchData(date);
   }, [date, fetchData]);
+
+  // When compare is enabled, set default compare date and fetch
+  useEffect(() => {
+    if (compareEnabled && date) {
+      const cd = subDays(date, 1);
+      setCompareDate(cd);
+      fetchCompareData(cd);
+    }
+    if (!compareEnabled) {
+      setCompareDate(null);
+      setCompareData(null);
+    }
+  }, [compareEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When primary date changes while compare is on, auto-update compare date
+  useEffect(() => {
+    if (compareEnabled && date) {
+      const cd = subDays(date, 1);
+      setCompareDate(cd);
+      fetchCompareData(cd);
+    }
+  }, [date]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When compare date changes explicitly (user picks a different date)
+  const handleCompareDateChange = (d: Date | undefined) => {
+    if (!d) return;
+    setCompareDate(d);
+    setCompareCalendarOpen(false);
+    fetchCompareData(d);
+  };
 
   const goToPrevDay = () => setDate((d) => d ? subDays(d, 1) : null);
   const goToNextDay = () => setDate((d) => d ? addDays(d, 1) : null);
@@ -66,6 +118,15 @@ export default function DailyPage() {
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-semibold text-slate-900">Daily Performance</h2>
           <SpendLegend />
+          <Button
+            variant={compareEnabled ? "default" : "outline"}
+            size="sm"
+            onClick={() => setCompareEnabled((v) => !v)}
+            className="gap-1.5"
+          >
+            <ArrowLeftRight className="h-3.5 w-3.5" />
+            Compare
+          </Button>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={goToPrevDay} disabled={!date}>
@@ -108,6 +169,33 @@ export default function DailyPage() {
         </div>
       </div>
 
+      {/* Comparison sub-header */}
+      {compareEnabled && (
+        <div className="flex items-center gap-3 text-sm text-slate-600 bg-slate-50 rounded-lg px-4 py-2 border border-slate-200">
+          <span className="font-medium">Comparing to:</span>
+          {compareDate ? (
+            <Popover open={compareCalendarOpen} onOpenChange={setCompareCalendarOpen}>
+              <PopoverTrigger>
+                <Button variant="outline" size="sm" className="h-7 text-xs">
+                  <CalendarIcon className="h-3 w-3 mr-1.5" />
+                  {format(compareDate, "MMMM d, yyyy")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="start">
+                <Calendar
+                  selected={compareDate}
+                  onSelect={handleCompareDateChange}
+                  month={compareDate}
+                />
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <Skeleton className="h-7 w-[8rem] rounded-md" />
+          )}
+          {compareLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-400" />}
+        </div>
+      )}
+
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {error}
@@ -126,11 +214,16 @@ export default function DailyPage() {
       ) : data ? (
         <HighlightProvider page="daily" contextDate={date ? format(date, "yyyy-MM-dd") : ""}>
           {data.freshness && <DataFreshnessBanner freshness={data.freshness} />}
-          <SummaryCards brands={data.brands} brandOrder={allBrandOrder} />
+          <SummaryCards
+            brands={data.brands}
+            brandOrder={allBrandOrder}
+            compareBrands={compareEnabled && !compareLoading ? compareData?.brands : undefined}
+          />
 
           <BrandCardsGrid
             brands={data.brands}
             brandOrder={allBrandOrder}
+            compareBrands={compareEnabled && !compareLoading ? compareData?.brands : undefined}
           />
         </HighlightProvider>
       ) : null}

@@ -6,31 +6,34 @@ import { BRANDS_CONFIG, ROW_LABELS } from "@/lib/constants";
 import { formatCurrency, formatRoas, formatPercent, cn } from "@/lib/utils";
 import { HighlightableCell } from "@/components/highlights/highlightable-cell";
 import { HighlightableMetric } from "@/components/highlights/highlightable-metric";
+import { DeltaIndicator, InlineDelta } from "@/components/daily/delta-indicator";
 import type { BrandDailyData } from "@/lib/types";
 
 interface BrandCardsGridProps {
   brands: Record<string, BrandDailyData>;
   brandOrder: string[];
+  compareBrands?: Record<string, BrandDailyData>;
 }
 
 const ROW_LABEL_LIST = ROW_LABELS.map((r) => r.label);
 
-export function BrandCardsGrid({ brands, brandOrder }: BrandCardsGridProps) {
+export function BrandCardsGrid({ brands, brandOrder, compareBrands }: BrandCardsGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {brandOrder.map((key) => {
         const b = brands[key];
         if (!b) return null;
-        return <BrandCard key={key} brandKey={key} data={b} />;
+        return <BrandCard key={key} brandKey={key} data={b} compareData={compareBrands?.[key]} />;
       })}
     </div>
   );
 }
 
-function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData }) {
+function BrandCard({ brandKey, data, compareData }: { brandKey: string; data: BrandDailyData; compareData?: BrandDailyData }) {
   const config = BRANDS_CONFIG[brandKey];
   const name = config?.display_name || brandKey;
   const totalSpend = data.total_ad_spend + data.bloomifi_spend + data.dsp_spend;
+  const cmpTotalSpend = compareData ? compareData.total_ad_spend + compareData.bloomifi_spend + compareData.dsp_spend : undefined;
 
   const hasActivity = totalSpend > 0 || data.total_sales > 0;
 
@@ -79,20 +82,15 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
 
       {/* KPI grid */}
       <div className="grid grid-cols-3 divide-x divide-slate-100">
-        <HighlightableMetric cellKey={`${brandKey}:_total:spend`} label="Spend" value={totalSpend > 0 ? formatCurrency(totalSpend) : "-"} />
-        <HighlightableMetric cellKey={`${brandKey}:total_sales:value`} label="Total Sales" value={data.total_sales > 0 ? formatCurrency(data.total_sales) : "-"} />
-        <HighlightableMetric cellKey={`${brandKey}:_total:roas`} label="ROAS" value={data.roas > 0 ? formatRoas(data.roas) : "-"} />
+        <KpiCell cellKey={`${brandKey}:_total:spend`} label="Spend" value={totalSpend > 0 ? formatCurrency(totalSpend) : "-"} current={totalSpend} previous={cmpTotalSpend} invertColor />
+        <KpiCell cellKey={`${brandKey}:total_sales:value`} label="Total Sales" value={data.total_sales > 0 ? formatCurrency(data.total_sales) : "-"} current={data.total_sales} previous={compareData?.total_sales} />
+        <KpiCell cellKey={`${brandKey}:_total:roas`} label="ROAS" value={data.roas > 0 ? formatRoas(data.roas) : "-"} current={data.roas} previous={compareData?.roas} />
       </div>
 
       <div className="grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100">
-        <HighlightableMetric cellKey={`${brandKey}:_total:sales`} label="Ad Sales" value={data.total_ad_sales > 0 ? formatCurrency(data.total_ad_sales) : "-"} subtle />
-        <HighlightableMetric cellKey={`${brandKey}:total_sales:troas`} label="TROAS" value={data.troas > 0 ? formatRoas(data.troas) : "-"} subtle />
-        <HighlightableMetric
-          cellKey={`${brandKey}:Bloomifi:spend`}
-          label="Bloomifi"
-          value={data.bloomifi_spend > 0 ? formatCurrency(data.bloomifi_spend) : "-"}
-          subtle
-        />
+        <KpiCell cellKey={`${brandKey}:_total:sales`} label="Ad Sales" value={data.total_ad_sales > 0 ? formatCurrency(data.total_ad_sales) : "-"} current={data.total_ad_sales} previous={compareData?.total_ad_sales} subtle />
+        <KpiCell cellKey={`${brandKey}:total_sales:troas`} label="TROAS" value={data.troas > 0 ? formatRoas(data.troas) : "-"} current={data.troas} previous={compareData?.troas} subtle />
+        <KpiCell cellKey={`${brandKey}:Bloomifi:spend`} label="Bloomifi" value={data.bloomifi_spend > 0 ? formatCurrency(data.bloomifi_spend) : "-"} current={data.bloomifi_spend} previous={compareData?.bloomifi_spend} invertColor subtle />
       </div>
 
       {/* Campaign breakdown */}
@@ -112,13 +110,21 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
               {ROW_LABEL_LIST.map((label) => {
                 const d = data.campaigns[label];
                 if (!d || (d.spend === 0 && d.sales === 0)) return null;
+                const cd = compareData?.campaigns[label];
                 return (
                   <tr key={label} className="border-b border-slate-200/40">
                     <td className="py-1 pl-4 pr-2 text-slate-600">{label}</td>
-                    <HighlightableCell cellKey={`${brandKey}:${label}:spend`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(d.spend)}</HighlightableCell>
-                    <HighlightableCell cellKey={`${brandKey}:${label}:sales`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(d.sales)}</HighlightableCell>
+                    <HighlightableCell cellKey={`${brandKey}:${label}:spend`} className="py-1 px-2 text-right tabular-nums">
+                      {formatCurrency(d.spend)}
+                      {cd !== undefined && <InlineDelta current={d.spend} previous={cd.spend} invertColor />}
+                    </HighlightableCell>
+                    <HighlightableCell cellKey={`${brandKey}:${label}:sales`} className="py-1 px-2 text-right tabular-nums">
+                      {formatCurrency(d.sales)}
+                      {cd !== undefined && <InlineDelta current={d.sales} previous={cd.sales} />}
+                    </HighlightableCell>
                     <HighlightableCell cellKey={`${brandKey}:${label}:roas`} className="py-1 px-2 text-right tabular-nums">
                       {d.roas > 0 ? formatRoas(d.roas) : "-"}
+                      {cd !== undefined && <InlineDelta current={d.roas} previous={cd.roas} />}
                     </HighlightableCell>
                     <td className="py-1 pl-2 pr-4 text-right tabular-nums">
                       {data.mtd_campaigns[label]?.roas > 0 ? formatRoas(data.mtd_campaigns[label].roas) : "-"}
@@ -129,7 +135,10 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
               {data.bloomifi_spend > 0 && (
                 <tr className="border-b border-slate-200/40">
                   <td className="py-1 pl-4 pr-2 text-slate-600">Bloomifi</td>
-                  <HighlightableCell cellKey={`${brandKey}:Bloomifi:spend`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(data.bloomifi_spend)}</HighlightableCell>
+                  <HighlightableCell cellKey={`${brandKey}:Bloomifi:spend`} className="py-1 px-2 text-right tabular-nums">
+                    {formatCurrency(data.bloomifi_spend)}
+                    {compareData !== undefined && <InlineDelta current={data.bloomifi_spend} previous={compareData.bloomifi_spend} invertColor />}
+                  </HighlightableCell>
                   <td className="py-1 px-2 text-right tabular-nums">-</td>
                   <td className="py-1 px-2 text-right tabular-nums">-</td>
                   <td className="py-1 pl-2 pr-4 text-right tabular-nums">-</td>
@@ -138,9 +147,13 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
               {data.dsp_spend > 0 && (
                 <tr className="border-b border-slate-200/40">
                   <td className="py-1 pl-4 pr-2 text-slate-600">DSP</td>
-                  <HighlightableCell cellKey={`${brandKey}:DSP:spend`} className="py-1 px-2 text-right tabular-nums">{formatCurrency(data.dsp_spend)}</HighlightableCell>
+                  <HighlightableCell cellKey={`${brandKey}:DSP:spend`} className="py-1 px-2 text-right tabular-nums">
+                    {formatCurrency(data.dsp_spend)}
+                    {compareData !== undefined && <InlineDelta current={data.dsp_spend} previous={compareData.dsp_spend} invertColor />}
+                  </HighlightableCell>
                   <HighlightableCell cellKey={`${brandKey}:DSP:sales`} className="py-1 px-2 text-right tabular-nums">
                     {data.dsp_sales > 0 ? formatCurrency(data.dsp_sales) : "-"}
+                    {compareData !== undefined && <InlineDelta current={data.dsp_sales} previous={compareData.dsp_sales} />}
                   </HighlightableCell>
                   <td className="py-1 px-2 text-right tabular-nums">-</td>
                   <td className="py-1 pl-2 pr-4 text-right tabular-nums">-</td>
@@ -154,13 +167,20 @@ function BrandCard({ brandKey, data }: { brandKey: string; data: BrandDailyData 
   );
 }
 
-function Metric({ label, value, subtle }: { label: string; value: string; subtle?: boolean }) {
+function KpiCell({
+  cellKey, label, value, subtle, current, previous, invertColor,
+}: {
+  cellKey: string; label: string; value: string; subtle?: boolean;
+  current: number; previous?: number; invertColor?: boolean;
+}) {
   return (
-    <div className={cn("px-3 py-2.5", subtle && "py-2")}>
-      <p className={cn("text-sm text-slate-500", subtle && "text-xs")}>{label}</p>
-      <p className={cn("font-semibold tabular-nums mt-0.5", subtle ? "text-base text-slate-600" : "text-lg")}>
-        {value}
-      </p>
+    <div className="relative">
+      <HighlightableMetric cellKey={cellKey} label={label} value={value} subtle={subtle} />
+      {previous !== undefined && (
+        <div className={cn("px-3 -mt-1.5 pb-1", subtle && "pb-0.5")}>
+          <DeltaIndicator current={current} previous={previous} invertColor={invertColor} />
+        </div>
+      )}
     </div>
   );
 }
