@@ -42,7 +42,7 @@ export function ColorPickerPopover({
   onRevertValue,
 }: ColorPickerPopoverProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [editInput, setEditInput] = useState(currentValue?.toString() ?? "");
+  const [editInput, setEditInput] = useState(currentValue != null ? Number(currentValue.toFixed(2)).toString() : "");
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
