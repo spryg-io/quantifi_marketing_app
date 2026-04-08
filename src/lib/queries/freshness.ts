@@ -61,11 +61,12 @@ export async function checkBrandFreshness(
   let status: BrandFreshness["status"] = "ok";
   if (!latestCampaign && !latestSales) {
     status = "missing";
-  } else if (
-    (latestCampaign && latestCampaign < targetDate) ||
-    (latestSales && latestSales < targetDate)
-  ) {
-    status = "stale";
+  } else {
+    // Use the most recent of the two dates — stale only if both sources are behind
+    const latest = [latestCampaign, latestSales].filter(Boolean).sort().pop()!;
+    if (latest < targetDate) {
+      status = "stale";
+    }
   }
 
   return { status, latest_campaign: latestCampaign, latest_sales: latestSales };
@@ -97,11 +98,11 @@ export async function checkFreshness(
 
       if (!latestCampaign && !latestSales) {
         status = "missing";
-      } else if (
-        (latestCampaign && latestCampaign < targetDate) ||
-        (latestSales && latestSales < targetDate)
-      ) {
-        status = "stale";
+      } else {
+        const latest = [latestCampaign, latestSales].filter(Boolean).sort().pop()!;
+        if (latest < targetDate) {
+          status = "stale";
+        }
       }
 
       return [brandKey, { status, latest_campaign: latestCampaign, latest_sales: latestSales }];
