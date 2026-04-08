@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const COLORS = [
@@ -21,6 +21,11 @@ interface ColorPickerPopoverProps {
   onClear: () => void;
   onClose: () => void;
   currentColor?: string;
+  editable?: boolean;
+  currentValue?: number;
+  isOverridden?: boolean;
+  onEditValue?: (value: number) => void;
+  onRevertValue?: () => void;
 }
 
 export function ColorPickerPopover({
@@ -30,8 +35,14 @@ export function ColorPickerPopover({
   onClear,
   onClose,
   currentColor,
+  editable,
+  currentValue,
+  isOverridden,
+  onEditValue,
+  onRevertValue,
 }: ColorPickerPopoverProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [editInput, setEditInput] = useState(currentValue?.toString() ?? "");
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -89,6 +100,57 @@ export function ColorPickerPopover({
         >
           Clear highlight
         </button>
+      )}
+      {editable && (
+        <>
+          <div className="border-t border-slate-200 my-2" />
+          <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider px-1 mb-1.5">
+            Edit Value
+          </p>
+          <div className="flex gap-1.5">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={editInput}
+              onChange={(e) => setEditInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const num = Number(editInput);
+                  if (isFinite(num) && num >= 0 && onEditValue) {
+                    onEditValue(num);
+                    onClose();
+                  }
+                }
+              }}
+              className="flex-1 min-w-0 px-2 py-1 text-xs border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+              autoFocus
+            />
+            <button
+              onClick={() => {
+                const num = Number(editInput);
+                if (isFinite(num) && num >= 0 && onEditValue) {
+                  onEditValue(num);
+                  onClose();
+                }
+              }}
+              className="px-2.5 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+            >
+              Save
+            </button>
+          </div>
+          {isOverridden && onRevertValue && (
+            <button
+              onClick={() => {
+                onRevertValue();
+                onClose();
+              }}
+              className="w-full mt-1.5 text-xs text-blue-600 hover:text-blue-800 py-1 border border-blue-200 rounded hover:bg-blue-50 transition-colors"
+            >
+              Revert to original
+            </button>
+          )}
+        </>
       )}
     </div>,
     document.body

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useHighlights } from "./highlight-context";
+import { useOverrides } from "@/components/overrides/override-context";
 import { ColorPickerPopover } from "./color-picker-popover";
 
 interface HighlightableCellProps {
@@ -9,13 +10,17 @@ interface HighlightableCellProps {
   className?: string;
   children?: React.ReactNode;
   style?: React.CSSProperties;
+  editable?: boolean;
+  currentValue?: number;
 }
 
-export function HighlightableCell({ cellKey, className, children, style }: HighlightableCellProps) {
+export function HighlightableCell({ cellKey, className, children, style, editable, currentValue }: HighlightableCellProps) {
   const { highlights, setHighlight, clearHighlight } = useHighlights();
+  const { overrides, setOverride, clearOverride } = useOverrides();
   const [picker, setPicker] = useState<{ x: number; y: number } | null>(null);
 
   const color = highlights[cellKey];
+  const isOverridden = cellKey in overrides;
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -24,7 +29,7 @@ export function HighlightableCell({ cellKey, className, children, style }: Highl
 
   return (
     <td
-      className={className}
+      className={`${className || ""}${isOverridden ? " text-blue-600" : ""}`}
       style={{ ...style, backgroundColor: color || style?.backgroundColor }}
       onContextMenu={handleContextMenu}
     >
@@ -43,6 +48,11 @@ export function HighlightableCell({ cellKey, className, children, style }: Highl
             setPicker(null);
           }}
           onClose={() => setPicker(null)}
+          editable={editable}
+          currentValue={currentValue}
+          isOverridden={isOverridden}
+          onEditValue={(value) => setOverride(cellKey, value)}
+          onRevertValue={() => clearOverride(cellKey)}
         />
       )}
     </td>

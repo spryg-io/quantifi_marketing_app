@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { format, subDays, addDays } from "date-fns";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, RefreshCw, ArrowLeftRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SummaryCards } from "@/components/daily/summary-cards";
 import { BrandCardsGrid } from "@/components/daily/brand-cards-grid";
 import { HighlightProvider } from "@/components/highlights/highlight-context";
+import { OverrideProvider, useOverrides } from "@/components/overrides/override-context";
 import { SpendLegend } from "@/components/shared/spend-legend";
 import { DataFreshnessBanner } from "@/components/shared/data-freshness-banner";
-import type { DailyResponse } from "@/lib/types";
+import { applyOverrides } from "@/lib/apply-overrides";
+import type { DailyResponse, BrandDailyData } from "@/lib/types";
 
 export default function DailyPage() {
   const [date, setDate] = useState<Date | null>(null);
@@ -215,20 +217,44 @@ export default function DailyPage() {
         </div>
       ) : data ? (
         <HighlightProvider page="daily" contextDate={date ? format(date, "yyyy-MM-dd") : ""}>
-          {data.freshness && <DataFreshnessBanner freshness={data.freshness} />}
-          <SummaryCards
-            brands={data.brands}
-            brandOrder={allBrandOrder}
-            compareBrands={compareEnabled && !compareLoading ? compareData?.brands : undefined}
-          />
-
-          <BrandCardsGrid
-            brands={data.brands}
-            brandOrder={allBrandOrder}
-            compareBrands={compareEnabled && !compareLoading ? compareData?.brands : undefined}
-          />
+          <OverrideProvider page="daily" contextDate={date ? format(date, "yyyy-MM-dd") : ""}>
+            {data.freshness && <DataFreshnessBanner freshness={data.freshness} />}
+            <DailyContent
+              brands={data.brands}
+              brandOrder={allBrandOrder}
+              compareBrands={compareEnabled && !compareLoading ? compareData?.brands : undefined}
+            />
+          </OverrideProvider>
         </HighlightProvider>
       ) : null}
     </div>
+  );
+}
+
+function DailyContent({
+  brands,
+  brandOrder,
+  compareBrands,
+}: {
+  brands: Record<string, BrandDailyData>;
+  brandOrder: string[];
+  compareBrands?: Record<string, BrandDailyData>;
+}) {
+  const { overrides } = useOverrides();
+  const effectiveBrands = useMemo(() => applyOverrides(brands, overrides), [brands, overrides]);
+
+  return (
+    <>
+      <SummaryCards
+        brands={effectiveBrands}
+        brandOrder={brandOrder}
+        compareBrands={compareBrands}
+      />
+      <BrandCardsGrid
+        brands={effectiveBrands}
+        brandOrder={brandOrder}
+        compareBrands={compareBrands}
+      />
+    </>
   );
 }

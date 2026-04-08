@@ -114,11 +114,11 @@ function BrandCard({ brandKey, data, compareData }: { brandKey: string; data: Br
                 return (
                   <tr key={label} className="border-b border-slate-200/40">
                     <td className="py-1 pl-4 pr-2 text-slate-600">{label}</td>
-                    <HighlightableCell cellKey={`${brandKey}:${label}:spend`} className="py-1 px-2 text-right tabular-nums">
+                    <HighlightableCell cellKey={`${brandKey}:${label}:spend`} className="py-1 px-2 text-right tabular-nums" editable currentValue={d.spend}>
                       {formatCurrency(d.spend)}
                       {cd !== undefined && <InlineDelta current={d.spend} previous={cd.spend} invertColor />}
                     </HighlightableCell>
-                    <HighlightableCell cellKey={`${brandKey}:${label}:sales`} className="py-1 px-2 text-right tabular-nums">
+                    <HighlightableCell cellKey={`${brandKey}:${label}:sales`} className="py-1 px-2 text-right tabular-nums" editable currentValue={d.sales}>
                       {formatCurrency(d.sales)}
                       {cd !== undefined && <InlineDelta current={d.sales} previous={cd.sales} />}
                     </HighlightableCell>

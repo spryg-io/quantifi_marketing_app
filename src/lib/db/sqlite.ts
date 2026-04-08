@@ -29,6 +29,16 @@ function getDb(): Database.Database {
         UNIQUE(page, context_date, cell_key)
       )
     `);
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS cell_overrides (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        page TEXT NOT NULL,
+        context_date TEXT NOT NULL,
+        cell_key TEXT NOT NULL,
+        value REAL NOT NULL,
+        UNIQUE(page, context_date, cell_key)
+      )
+    `);
   }
   return db;
 }
@@ -116,4 +126,33 @@ export function deleteAllHighlights(page: string, contextDate: string): void {
   const db = getDb();
   db.prepare("DELETE FROM cell_highlights WHERE page = ? AND context_date = ?")
     .run(page, contextDate);
+}
+
+// --- Cell Overrides ---
+
+export function getOverrides(page: string, contextDate: string): Record<string, number> {
+  const db = getDb();
+  const rows = db
+    .prepare("SELECT cell_key, value FROM cell_overrides WHERE page = ? AND context_date = ?")
+    .all(page, contextDate) as { cell_key: string; value: number }[];
+  const result: Record<string, number> = {};
+  for (const row of rows) {
+    result[row.cell_key] = row.value;
+  }
+  return result;
+}
+
+export function upsertOverride(page: string, contextDate: string, cellKey: string, value: number): void {
+  const db = getDb();
+  db.prepare(
+    `INSERT INTO cell_overrides (page, context_date, cell_key, value)
+     VALUES (?, ?, ?, ?)
+     ON CONFLICT(page, context_date, cell_key) DO UPDATE SET value = excluded.value`
+  ).run(page, contextDate, cellKey, value);
+}
+
+export function deleteOverride(page: string, contextDate: string, cellKey: string): void {
+  const db = getDb();
+  db.prepare("DELETE FROM cell_overrides WHERE page = ? AND context_date = ? AND cell_key = ?")
+    .run(page, contextDate, cellKey);
 }

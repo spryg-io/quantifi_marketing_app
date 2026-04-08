@@ -113,6 +113,8 @@ export interface CellHighlight {
 
 export type HighlightMap = Record<string, string>;
 
+export type OverrideMap = Record<string, number>;
+
 export interface BrandFreshness {
   status: "ok" | "stale" | "missing";
   latest_campaign: string | null;
