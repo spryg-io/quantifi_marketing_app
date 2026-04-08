@@ -11,10 +11,13 @@ interface OverrideContextValue {
 
 const OverrideContext = createContext<OverrideContextValue | null>(null);
 
+const EMPTY_OVERRIDES: OverrideMap = {};
+const noop = () => {};
+const defaultValue: OverrideContextValue = { overrides: EMPTY_OVERRIDES, setOverride: noop, clearOverride: noop };
+
 export function useOverrides(): OverrideContextValue {
   const ctx = useContext(OverrideContext);
-  if (!ctx) throw new Error("useOverrides must be used within an OverrideProvider");
-  return ctx;
+  return ctx ?? defaultValue;
 }
 
 interface OverrideProviderProps {
