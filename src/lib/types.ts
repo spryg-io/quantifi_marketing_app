@@ -116,7 +116,7 @@ export type HighlightMap = Record<string, string>;
 export type OverrideMap = Record<string, number>;
 
 export interface BrandFreshness {
-  status: "ok" | "stale" | "missing";
+  status: "ok" | "partial" | "stale" | "missing";
   latest_campaign: string | null;
   latest_sales: string | null;
 }

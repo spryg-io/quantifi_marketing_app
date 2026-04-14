@@ -6,6 +6,15 @@ interface DataFreshnessBannerProps {
   freshness: Record<string, BrandFreshness>;
 }
 
+function formatStaleSources(f: BrandFreshness): string {
+  const parts: string[] = [];
+  if (!f.latest_campaign) parts.push("campaigns: none");
+  else parts.push(`campaigns: ${f.latest_campaign}`);
+  if (!f.latest_sales) parts.push("sales: none");
+  else parts.push(`sales: ${f.latest_sales}`);
+  return parts.join(", ");
+}
+
 export function DataFreshnessBanner({ freshness }: DataFreshnessBannerProps) {
   const issues = Object.entries(freshness).filter(
     ([, f]) => f.status !== "ok"
@@ -14,6 +23,7 @@ export function DataFreshnessBanner({ freshness }: DataFreshnessBannerProps) {
   if (issues.length === 0) return null;
 
   const stale = issues.filter(([, f]) => f.status === "stale");
+  const partial = issues.filter(([, f]) => f.status === "partial");
   const missing = issues.filter(([, f]) => f.status === "missing");
 
   return (
@@ -27,8 +37,16 @@ export function DataFreshnessBanner({ freshness }: DataFreshnessBannerProps) {
               <span className="font-medium">Stale data:</span>{" "}
               {stale.map(([key, f]) => {
                 const name = BRANDS_CONFIG[key]?.display_name ?? key;
-                const latest = f.latest_campaign ?? f.latest_sales ?? "unknown";
-                return `${name} (last: ${latest})`;
+                return `${name} (${formatStaleSources(f)})`;
+              }).join(", ")}
+            </p>
+          )}
+          {partial.length > 0 && (
+            <p>
+              <span className="font-medium">Partial data:</span>{" "}
+              {partial.map(([key, f]) => {
+                const name = BRANDS_CONFIG[key]?.display_name ?? key;
+                return `${name} (${formatStaleSources(f)})`;
               }).join(", ")}
             </p>
           )}
@@ -52,8 +70,6 @@ interface BrandFreshnessBannerProps {
 export function BrandFreshnessBanner({ freshness, brandName }: BrandFreshnessBannerProps) {
   if (freshness.status === "ok") return null;
 
-  const latest = freshness.latest_campaign ?? freshness.latest_sales ?? "unknown";
-
   return (
     <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
       <div className="flex items-start gap-2">
@@ -61,8 +77,10 @@ export function BrandFreshnessBanner({ freshness, brandName }: BrandFreshnessBan
         <p>
           {freshness.status === "missing" ? (
             <><span className="font-medium">No data found</span> for {brandName}. The database may not have synced yet.</>
+          ) : freshness.status === "partial" ? (
+            <><span className="font-medium">Partial data</span> for {brandName} — {formatStaleSources(freshness)}.</>
           ) : (
-            <><span className="font-medium">Stale data</span> for {brandName} — latest available: {latest}.</>
+            <><span className="font-medium">Stale data</span> for {brandName} — {formatStaleSources(freshness)}.</>
           )}
         </p>
       </div>

@@ -62,10 +62,12 @@ export async function checkBrandFreshness(
   if (!latestCampaign && !latestSales) {
     status = "missing";
   } else {
-    // Use the most recent of the two dates — stale only if both sources are behind
-    const latest = [latestCampaign, latestSales].filter(Boolean).sort().pop()!;
-    if (latest < targetDate) {
+    const campaignStale = !latestCampaign || latestCampaign < targetDate;
+    const salesStale = !latestSales || latestSales < targetDate;
+    if (campaignStale && salesStale) {
       status = "stale";
+    } else if (campaignStale || salesStale) {
+      status = "partial";
     }
   }
 
@@ -99,9 +101,12 @@ export async function checkFreshness(
       if (!latestCampaign && !latestSales) {
         status = "missing";
       } else {
-        const latest = [latestCampaign, latestSales].filter(Boolean).sort().pop()!;
-        if (latest < targetDate) {
+        const campaignStale = !latestCampaign || latestCampaign < targetDate;
+        const salesStale = !latestSales || latestSales < targetDate;
+        if (campaignStale && salesStale) {
           status = "stale";
+        } else if (campaignStale || salesStale) {
+          status = "partial";
         }
       }
 
