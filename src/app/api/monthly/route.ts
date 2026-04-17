@@ -153,7 +153,10 @@ export async function GET(request: NextRequest) {
             } else if (entry.source === "sum_above") {
               for (const prevRow of rows.slice(-3)) {
                 spend += prevRow.spend;
-                sales += prevRow.sales;
+                // Total Sales = Amazon sales only (exclude DSP sales)
+                if (!prevRow.label.includes("(DSP)")) {
+                  sales += prevRow.sales;
+                }
               }
             }
 
