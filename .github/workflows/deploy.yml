@@ -1,4 +1,4 @@
-name: Deploy to local server
+name: Deploy to Railway
 
 on:
   push:
@@ -6,29 +6,15 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux, marketing]
+    runs-on: ubuntu-latest
     steps:
-      - name: Pull latest changes
-        run: |
-          cd /home/quantifi/quantifi_marketing_app
-          git pull origin main
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-          cd /home/quantifi/quantifi_marketing_app
-          npm install --legacy-peer-deps
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
 
-      - name: Build
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-          cd /home/quantifi/quantifi_marketing_app
-          npm run build
-
-      - name: Restart app
-        run: |
-          systemctl --user restart quantifi-marketing
-          sleep 2
-          systemctl --user is-active quantifi-marketing
+      - name: Deploy to Railway
+        run: railway up --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

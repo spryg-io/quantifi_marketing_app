@@ -1,7 +1,8 @@
 import Database from "better-sqlite3";
 import path from "path";
 
-const DB_PATH = path.join(process.cwd(), "dsp_entries.db");
+const DATA_DIR = process.env.SQLITE_DATA_DIR || process.cwd();
+const DB_PATH = path.join(DATA_DIR, "dsp_entries.db");
 
 let db: Database.Database | null = null;
 
