@@ -6,6 +6,17 @@ healthcheckPath = "/"
 healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
+# SQLITE_DATA_DIR=/data (see Dockerfile) pins this service to a single replica:
+# Railway volumes are single-attach, and SQLite can't be multi-writer.
+numReplicas = 1
+# Zero-downtime single-replica rollout: overlap starts the new container while
+# the old one keeps serving; draining gives the old one time to finish in-flight
+# requests after SIGTERM before SIGKILL.
+overlapSeconds = 15
+drainingSeconds = 30
 
+# Declaring the mount makes the volume a startup prerequisite — if it fails to
+# attach, the container won't start, rather than running against an empty disk
+# and silently losing writes.
 [[mounts]]
 mountPath = "/data"
