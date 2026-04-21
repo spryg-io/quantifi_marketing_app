@@ -84,11 +84,6 @@ export const BRANDS_CONFIG: Record<string, BrandConfig> = {
     display_name: "MZSkin",
     sales_channel: "Amazon.com",
   },
-  apivita: {
-    schema: "apivita",
-    display_name: "Apivita",
-    sales_channel: "Amazon.com",
-  },
   dr_organic: {
     schema: "dr_organic",
     display_name: "Dr. Organic",
@@ -104,16 +99,10 @@ export const BRANDS_CONFIG: Record<string, BrandConfig> = {
     display_name: "Stories & Ink",
     sales_channel: "Amazon.com",
   },
-  uriage: {
-    schema: "uriage",
-    display_name: "Uriage",
-    sales_channel: "Amazon.com",
-  },
 };
 
 export const BRAND_ORDER = [
   "actiiv",
-  "apivita",
   "bioeffect",
   "caldera",
   "dr_organic",
@@ -126,7 +115,6 @@ export const BRAND_ORDER = [
   "stories_ink",
   "tbs",
   "uplift5",
-  "uriage",
   "versed",
   "zenagen",
 ];
@@ -167,12 +155,6 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "ACTIIV (Bloomifi)", source: "sheet" },
   { display_name: "ACTIIV (DSP)", source: "sheet" },
   { display_name: "ACTIIV (Total)", source: "sum_above" },
-
-  // Apivita group
-  { display_name: "Apivita (Amazon)", brand_key: "apivita", source: "database" },
-  { display_name: "Apivita (Bloomifi)", source: "sheet" },
-  { display_name: "Apivita (DSP)", source: "sheet" },
-  { display_name: "Apivita (Total)", source: "sum_above" },
 
   // Bioeffect group
   { display_name: "Bioeffect (Amazon)", brand_key: "bioeffect", source: "database" },
@@ -245,12 +227,6 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "Uplift5 (Bloomifi)", source: "sheet" },
   { display_name: "Uplift5 (DSP)", source: "sheet" },
   { display_name: "Uplift5 (Total)", source: "sum_above" },
-
-  // Uriage group
-  { display_name: "Uriage (Amazon)", brand_key: "uriage", source: "database" },
-  { display_name: "Uriage (Bloomifi)", source: "sheet" },
-  { display_name: "Uriage (DSP)", source: "sheet" },
-  { display_name: "Uriage (Total)", source: "sum_above" },
 
   // Versed group
   { display_name: "Versed (Amazon)", brand_key: "versed", source: "database" },

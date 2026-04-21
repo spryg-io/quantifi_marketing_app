@@ -14,7 +14,6 @@ interface MonthlyCardsGridProps {
 // Map display names back to brand slugs for linking
 const BRAND_SLUG_MAP: Record<string, string> = {
   ACTIIV: "actiiv",
-  Apivita: "apivita",
   Bioeffect: "bioeffect",
   Caldera: "caldera",
   "Dr. Organic": "dr_organic",
@@ -27,7 +26,6 @@ const BRAND_SLUG_MAP: Record<string, string> = {
   "Stories & Ink": "stories_ink",
   TBS: "tbs",
   Uplift5: "uplift5",
-  Uriage: "uriage",
   Versed: "versed",
   Zenagen: "zenagen",
   SBL: "sbl_uk",
