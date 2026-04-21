@@ -13,19 +13,24 @@ interface MonthlyCardsGridProps {
 
 // Map display names back to brand slugs for linking
 const BRAND_SLUG_MAP: Record<string, string> = {
+  ACTIIV: "actiiv",
+  Apivita: "apivita",
+  Bioeffect: "bioeffect",
+  Caldera: "caldera",
+  "Dr. Organic": "dr_organic",
+  Hanni: "hanni",
   Herbivore: "herbivore",
   Iconic: "iconic_london",
-  Hanni: "hanni",
-  OneSkin: "oneskin",
-  ACTIIV: "actiiv",
-  Zenagen: "zenagen",
-  Caldera: "caldera",
-  Bioeffect: "bioeffect",
-  Versed: "versed",
-  SBL: "sbl_uk",
-  TBS: "tbs",
+  "Luna Daily": "luna_daily",
   MZSkin: "mzskin",
+  OneSkin: "oneskin",
+  "Stories & Ink": "stories_ink",
+  TBS: "tbs",
   Uplift5: "uplift5",
+  Uriage: "uriage",
+  Versed: "versed",
+  Zenagen: "zenagen",
+  SBL: "sbl_uk",
 };
 
 export function MonthlyCardsGrid({ brandGroups }: MonthlyCardsGridProps) {

@@ -84,19 +84,49 @@ export const BRANDS_CONFIG: Record<string, BrandConfig> = {
     display_name: "MZSkin",
     sales_channel: "Amazon.com",
   },
+  apivita: {
+    schema: "apivita",
+    display_name: "Apivita",
+    sales_channel: "Amazon.com",
+  },
+  dr_organic: {
+    schema: "dr_organic",
+    display_name: "Dr. Organic",
+    sales_channel: "Amazon.com",
+  },
+  luna_daily: {
+    schema: "luna_daily",
+    display_name: "Luna Daily",
+    sales_channel: "Amazon.com",
+  },
+  stories_ink: {
+    schema: "stories_ink",
+    display_name: "Stories & Ink",
+    sales_channel: "Amazon.com",
+  },
+  uriage: {
+    schema: "uriage",
+    display_name: "Uriage",
+    sales_channel: "Amazon.com",
+  },
 };
 
 export const BRAND_ORDER = [
   "actiiv",
+  "apivita",
   "bioeffect",
   "caldera",
+  "dr_organic",
   "hanni",
   "herbivore",
   "iconic_london",
+  "luna_daily",
   "mzskin",
   "oneskin",
+  "stories_ink",
   "tbs",
   "uplift5",
+  "uriage",
   "versed",
   "zenagen",
 ];
@@ -138,6 +168,12 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "ACTIIV (DSP)", source: "sheet" },
   { display_name: "ACTIIV (Total)", source: "sum_above" },
 
+  // Apivita group
+  { display_name: "Apivita (Amazon)", brand_key: "apivita", source: "database" },
+  { display_name: "Apivita (Bloomifi)", source: "sheet" },
+  { display_name: "Apivita (DSP)", source: "sheet" },
+  { display_name: "Apivita (Total)", source: "sum_above" },
+
   // Bioeffect group
   { display_name: "Bioeffect (Amazon)", brand_key: "bioeffect", source: "database" },
   { display_name: "Bioeffect (Bloomifi)", source: "sheet" },
@@ -149,6 +185,12 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "Caldera (Bloomifi)", source: "sheet" },
   { display_name: "Caldera (DSP)", source: "sheet" },
   { display_name: "Caldera (Total)", source: "sum_above" },
+
+  // Dr. Organic group
+  { display_name: "Dr. Organic (Amazon)", brand_key: "dr_organic", source: "database" },
+  { display_name: "Dr. Organic (Bloomifi)", source: "sheet" },
+  { display_name: "Dr. Organic (DSP)", source: "sheet" },
+  { display_name: "Dr. Organic (Total)", source: "sum_above" },
 
   // Hanni group
   { display_name: "Hanni (Amazon)", brand_key: "hanni", source: "database" },
@@ -168,6 +210,12 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "Iconic (DSP)", source: "sheet" },
   { display_name: "Iconic (Total)", source: "sum_above" },
 
+  // Luna Daily group
+  { display_name: "Luna Daily (Amazon)", brand_key: "luna_daily", source: "database" },
+  { display_name: "Luna Daily (Bloomifi)", source: "sheet" },
+  { display_name: "Luna Daily (DSP)", source: "sheet" },
+  { display_name: "Luna Daily (Total)", source: "sum_above" },
+
   // MZSkin group
   { display_name: "MZSkin (Amazon)", brand_key: "mzskin", source: "database" },
   { display_name: "MZSkin (Bloomifi)", source: "sheet" },
@@ -180,11 +228,11 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "OneSkin (DSP)", source: "sheet" },
   { display_name: "OneSkin (Total)", source: "sum_above" },
 
-  // SBL group (combined from 4 sub-brands)
-  { display_name: "SBL (Amazon)", brand_keys: ["sbl_uk", "sbl_it", "sbl_germany", "sbl_us"], source: "database_sum" },
-  { display_name: "SBL (Bloomifi)", source: "sheet" },
-  { display_name: "SBL (DSP)", source: "sheet" },
-  { display_name: "SBL (Total)", source: "sum_above" },
+  // Stories & Ink group
+  { display_name: "Stories & Ink (Amazon)", brand_key: "stories_ink", source: "database" },
+  { display_name: "Stories & Ink (Bloomifi)", source: "sheet" },
+  { display_name: "Stories & Ink (DSP)", source: "sheet" },
+  { display_name: "Stories & Ink (Total)", source: "sum_above" },
 
   // TBS group
   { display_name: "TBS (Amazon)", brand_key: "tbs", source: "database" },
@@ -198,6 +246,12 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "Uplift5 (DSP)", source: "sheet" },
   { display_name: "Uplift5 (Total)", source: "sum_above" },
 
+  // Uriage group
+  { display_name: "Uriage (Amazon)", brand_key: "uriage", source: "database" },
+  { display_name: "Uriage (Bloomifi)", source: "sheet" },
+  { display_name: "Uriage (DSP)", source: "sheet" },
+  { display_name: "Uriage (Total)", source: "sum_above" },
+
   // Versed group
   { display_name: "Versed (Amazon)", brand_key: "versed", source: "database" },
   { display_name: "Versed (Bloomifi)", source: "sheet" },
@@ -209,6 +263,12 @@ export const MASTER_TAB_BRANDS: MasterTabBrandConfig[] = [
   { display_name: "Zenagen (Bloomifi)", source: "sheet" },
   { display_name: "Zenagen (DSP)", source: "sheet" },
   { display_name: "Zenagen (Total)", source: "sum_above" },
+
+  // SBL group (combined from 4 sub-brands)
+  { display_name: "SBL (Amazon)", brand_keys: ["sbl_uk", "sbl_it", "sbl_germany", "sbl_us"], source: "database_sum" },
+  { display_name: "SBL (Bloomifi)", source: "sheet" },
+  { display_name: "SBL (DSP)", source: "sheet" },
+  { display_name: "SBL (Total)", source: "sum_above" },
 ];
 
 // Brand display names for the brand deep-dive selector
