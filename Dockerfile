@@ -24,13 +24,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Copy built assets
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public 2>/dev/null || true
 
-# better-sqlite3 needs the native module from the build stage
+# better-sqlite3 needs the native module and its runtime deps from the build stage
 COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
-COPY --from=builder /app/node_modules/bindings ./node_modules/bindings 2>/dev/null || true
-COPY --from=builder /app/node_modules/prebuild-install ./node_modules/prebuild-install 2>/dev/null || true
-COPY --from=builder /app/node_modules/file-uri-to-path ./node_modules/file-uri-to-path 2>/dev/null || true
+COPY --from=builder /app/node_modules/bindings ./node_modules/bindings
+COPY --from=builder /app/node_modules/prebuild-install ./node_modules/prebuild-install
+COPY --from=builder /app/node_modules/file-uri-to-path ./node_modules/file-uri-to-path
 
 # SQLite data directory — mount a Railway volume here
 RUN mkdir -p /data
